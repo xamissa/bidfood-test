@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+   <data>
+      <record id="bidfood_sale_form" model="ir.ui.view">
+         <field name="name">bidfood.sale.form</field>
+         <field name="model">bidfood.sale</field>
+         <field name="arch" type="xml">
+            <form>
+               <header>
+                  <button string="token" name="bidfood_token" type="object" class="oe_highlight" />
+                  <button string="Get Product" name="bidfood_product" type="object" class="oe_highlight" />
+               </header>
+               <sheet>
+                  <group>
+                     <group>
+                        <field name="name" required="True" />
+                        <field name="password" required="True" />
+                        <field name="token" />
+                        <field name="url" required="True" />
+                     </group>
+                  </group>
+               </sheet>
+               <div class="oe_chatter">
+                  <field name="message_follower_ids" />
+                  <field name="activity_ids" />
+                  <field name="message_ids" />
+               </div>
+            </form>
+         </field>
+      </record>
+      <record id="bidfood_sale_tree_view" model="ir.ui.view">
+         <field name="name">bidfood.sale.sale.tree</field>
+         <field name="model">bidfood.sale</field>
+         <field name="arch" type="xml">
+            <tree>
+               <field name="name" />
+            </tree>
+         </field>
+      </record>
+      <record id="bidfood_sale_action" model="ir.actions.act_window">
+         <field name="name">BidFood Sale</field>
+         <field name="res_model">bidfood.sale</field>
+         <field name="view_mode">tree,form</field>
+         <field name="view_id" ref="bidfood_sale_tree_view" />
+      </record>
+      <menuitem id="bidfood_sale_sequence" name="Shop2stock Sale" parent="sale.menu_sale_config" action="bidfood_sale_action" sequence="2" />
+   </data>
+</odoo>
