@@ -42,15 +42,16 @@ class bidfood_sale(models.Model):
         return True
     def bidfood_product(self):
         url = "https://pos.bidfood.co.za/api/Product"
-        #headers={"Content-Type":"application/json"}
         payload={}
-        headers = {		"type": "text",
-  'Authorization': self.token
+        headers = {
+  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImFsYW4iLCJuYmYiOjE2NDYzOTY1NjQsImV4cCI6MTY0NjQwMDE2NCwiaWF0IjoxNjQ2Mzk2NTY0fQ.2o4FrdU2yRnmL3BH-wPUC02cg6e8sGvy0wrAcwase2w'
 }
+
+
         resp = requests.request("GET", url, headers=headers, data=payload)
-        print("+++++++++++++++++++++",resp.status_code)
+        print("+++++++++++++<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<++++++++",resp.status_code)
         if resp.status_code==200:
-           print(response.text)
+           print(resp.text)
            self.token=resp.text
            self.message_post(body=_("Product Fetch") ) 
         else:
