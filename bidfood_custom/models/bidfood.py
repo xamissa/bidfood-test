@@ -13,6 +13,10 @@ from requests.structures import CaseInsensitiveDict
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
+class Productemplate(models.Model):
+    _inherit = "product.template"
+    gp_unit = fields.Char(string="GP Unit")
+    
 _logger = logging.getLogger(__name__)
 
 class bidfood_sale(models.Model):
@@ -23,8 +27,8 @@ class bidfood_sale(models.Model):
     token = fields.Char(string="Token", copy=False,readonly=True)
     url = fields.Char(string="URL", copy=False,default="https://pos.bidfood.co.za/api/Product/authentication")
 
-    def bidfood_token(self):
         
+    def bidfood_token(self):
         headers={"Content-Type":"application/json"}
         payload = json.dumps({
   "userName": self.name,
@@ -34,26 +38,40 @@ class bidfood_sale(models.Model):
 
         if resp.status_code==200:
 
-           print("=================",resp)
            self.token=resp.text
            self.message_post(body=_("Token Generated") ) 
         else:
            self.message_post(body=_("Token Error "))  
-        return True
+        return resp.text
+        
     def bidfood_product(self):
-        url = "https://pos.bidfood.co.za/api/Product"
         payload={}
-        headers = {
-  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImFsYW4iLCJuYmYiOjE2NDYzOTY1NjQsImV4cCI6MTY0NjQwMDE2NCwiaWF0IjoxNjQ2Mzk2NTY0fQ.2o4FrdU2yRnmL3BH-wPUC02cg6e8sGvy0wrAcwase2w'
-}
-
-
+        url = "https://pos.bidfood.co.za/api/Product"
+        self.bidfood_token()
+        headers={"Authorization": "Bearer %s" %self.token}
         resp = requests.request("GET", url, headers=headers, data=payload)
-        print("+++++++++++++<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<++++++++",resp.status_code)
         if resp.status_code==200:
-           print(resp.text)
-           self.token=resp.text
+           res=resp.json()
+           create_product=[]
+           for r in res:
+              product=self.env['product.template'].search([('default_code','=',r['internal_Reference'])],order="id desc", limit=1)
+              if not product:
+                 create_product.append(r)
+           self.bidfood_product_create(create_product)
            self.message_post(body=_("Product Fetch") ) 
         else:
-           self.message_post(body=_("Error%s",resp.text))  
+           self.message_post(body=_("Error%s",resp.text)) 
+        return True
+
+    def bidfood_product_create(self,create_product):
+        product=self.env['product.template']
+        product_categ_obj = self.env['product.category']
+        for r in create_product:
+           categ_id = product_categ_obj.search([('name', '=', r['product_category'])])
+           if categ_id:
+              categ_id=categ_id.id
+           else:
+              categ_id = product_categ_obj.create({'name': r['product_category']}).id
+           product.create({'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'categ_id':categ_id,'type':'product'})
+        print("************bidfood_product_create******")
         return True

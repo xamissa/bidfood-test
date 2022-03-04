@@ -15,11 +15,9 @@
                 
                 
             <xpath expr="//page[@name='general_information']" position="after">
-                <page name="Shop2 Stock Details" string="Shop2 Stock ">
-                    <group string="Shop2 Stock  ">
-                        <field name="s2s_product" />
-                                                <field name="s2s_stock_level"/>
-                        <field name="s2s_stock" />
+                <page name="BidFood  Details" string="BidFood ">
+                    <group >
+                        <field name="gp_unit" />
                     </group>
                 </page>
             </xpath>
