@@ -65,13 +65,21 @@ class bidfood_sale(models.Model):
 
     def bidfood_product_create(self,create_product):
         product=self.env['product.template']
-        product_categ_obj = self.env['product.category']
+        product_categ_obj = self.env['pos.category']
         for r in create_product:
+           barcode=''
+           to_weight=False
+           if r['barcode'].strip() :
+              barcode =r['barcode']
+           if r['rndwght']!=0:
+              to_weight=True
            categ_id = product_categ_obj.search([('name', '=', r['product_category'])])
            if categ_id:
               categ_id=categ_id.id
            else:
               categ_id = product_categ_obj.create({'name': r['product_category']}).id
-           product.create({'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'categ_id':categ_id,'type':'product'})
-        print("************bidfood_product_create******")
+           val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
+           if barcode:
+             val.update({'barcode':barcode})
+           product.create(val)
         return True
