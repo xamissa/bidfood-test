@@ -24,14 +24,20 @@ class product_big_log(models.Model):
     name = fields.Char(string="Name")
     payload = fields.Text(string="Payload")
     error = fields.Text(string="Error")
-    type = fields.Selection([('import', 'Import'), ('export', 'Export')], string="Operation")
+    ttype = fields.Selection([('create', 'Create'), ('update', 'Update')], string="Operation")
+    etype = fields.Selection([('fail', 'Fail'), ('done', 'Done')], string="State")
+    
+    @api.model
+    def create(self, vals):
+        """
+        This method is create for sequence wise name.
+        :param vals: values
+        :return:super
+        """
+        seq = self.env['ir.sequence'].next_by_code('common.log.book.ept') or '/'
+        vals['name'] = seq
+        return super(product_big_log, self).create(vals)
 
-
-class bidfood_sale(models.Model):
-    _name = 'bidfood.sale'
-    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
-    name = fields.Char(string="UserName", copy=False)
-    password = fields.Char(string="Password", copy=False)
 class bidfood_sale(models.Model):
     _name = 'bidfood.sale'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
@@ -74,8 +80,10 @@ class bidfood_sale(models.Model):
               if product:
                   r.update({'product_id':product.id})
                   update_product.append(r)
-           self.bidfood_product_create(create_product)
-           self.bidfood_product_uppdate(update_product)
+           if create_product:
+             self.bidfood_product_create(create_product)
+           if update_product:
+             self.bidfood_product_update(update_product)
            self.message_post(body=_("Product Fetch Succefully") ) 
         else:
            self.message_post(body=_("Error%s",resp.text)) 
@@ -104,10 +112,11 @@ class bidfood_sale(models.Model):
       
     def bidfood_product_update(self,create_product):
         product=self.env['product.template']
+        product_log=self.env['product.big.log']
         product_categ_obj = self.env['pos.category']
         for r in create_product:
            barcode=''
-           product=self.env['product.template'].r['product_id']
+           product=self.env['product.template'].browse(r['product_id'])
            to_weight=False
            if r['barcode'].strip() :
               barcode =r['barcode']
@@ -120,8 +129,20 @@ class bidfood_sale(models.Model):
               categ_id = product_categ_obj.create({'name': r['product_category']}).id
               
            val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
-             
+                
            if barcode:
              val.update({'barcode':barcode})
-           product.write(val)
+           try:
+               product.write(val)
+               log_book_id = product_log.create({
+                                   "etype":'done',
+                                   "ttype":'update',
+                                   "payload":r,
+                                   })
+           except:
+               log_book_id = product_log.create({
+                                   "etype":'fail',
+                                   "ttype":'update',
+                                   "payload":r,
+                                   })
         return True  
