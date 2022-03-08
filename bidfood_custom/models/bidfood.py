@@ -34,7 +34,7 @@ class product_big_log(models.Model):
         :param vals: values
         :return:super
         """
-        seq = self.env['ir.sequence'].next_by_code('common.log.book.ept') or '/'
+        seq = self.env['ir.sequence'].next_by_code('common.log.book.food') or '/'
         vals['name'] = seq
         return super(product_big_log, self).create(vals)
 
@@ -91,6 +91,7 @@ class bidfood_sale(models.Model):
 
     def bidfood_product_create(self,create_product):
         product=self.env['product.template']
+        product_log=self.env['product.big.log']
         product_categ_obj = self.env['pos.category']
         for r in create_product:
            barcode=''
@@ -107,7 +108,23 @@ class bidfood_sale(models.Model):
            val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
            if barcode:
              val.update({'barcode':barcode})
-           product.create(val)
+                   
+           try:
+              product.create(val)
+              log_book_id = product_log.create({
+                                   "etype":'done',
+                                   "ttype":'create',
+                                   "payload":r,
+                                   })
+           except Exception as error:
+              log_book_id = product_log.create({
+                                   "etype":'fail',
+                                   "ttype":'create',
+                                   "payload":r,
+                                   "error":str(error)
+               })
+                      
+           
         return True
       
     def bidfood_product_update(self,create_product):
@@ -139,10 +156,11 @@ class bidfood_sale(models.Model):
                                    "ttype":'update',
                                    "payload":r,
                                    })
-           except:
+           except Exception as error:
                log_book_id = product_log.create({
                                    "etype":'fail',
                                    "ttype":'update',
                                    "payload":r,
+                                   "error":str(error)
                                    })
         return True  
