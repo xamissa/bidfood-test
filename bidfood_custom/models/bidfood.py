@@ -14,6 +14,11 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
+
+class Productemplate(models.Model):
+    _inherit = "product.template"
+    gp_unit = fields.Char(string="GP Unit")
+    
 class product_big_log(models.Model):
     _name = "product.big.log"
     name = fields.Char(string="Name")
