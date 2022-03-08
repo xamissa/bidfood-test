@@ -11,7 +11,7 @@
             'security/ir.model.access.csv',
           'views/bidfood_views.xml',
           'views/ir_sequence.xml',
-       # 'views/product_views.xml',
+        'views/product_views.xml',
       
     ],
     'depends': ['point_of_sale'],
