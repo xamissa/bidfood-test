@@ -17,5 +17,6 @@
     'depends': ['point_of_sale'],
     'qweb': [''],
     'installable': True,
+    'license': 'LGPL-3',
    
 }

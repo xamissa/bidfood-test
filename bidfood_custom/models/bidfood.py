@@ -21,6 +21,7 @@ class Productemplate(models.Model):
 
 class product_big(models.Model):
     _name = "product.big"
+    _description = 'Product Big'
 
     name = fields.Char(string="Name")
     log_ids = fields.One2many('product.big.log','product_big',string="Logs")
@@ -38,6 +39,8 @@ class product_big(models.Model):
 
 class product_big_log(models.Model):
     _name = "product.big.log"
+    _description = 'Product Big Log'
+
     name = fields.Char(string="Name")
     payload = fields.Text(string="Payload")
     error = fields.Text(string="Error")
@@ -47,6 +50,7 @@ class product_big_log(models.Model):
 
 class bidfood_sale(models.Model):
     _name = 'bidfood.sale'
+    _description = 'BidFood Sale'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
     name = fields.Char(string="UserName", copy=False)
     password = fields.Char(string="Password", copy=False)
@@ -113,7 +117,7 @@ class bidfood_sale(models.Model):
               categ_id=categ_id.id
            else:
               categ_id = product_categ_obj.create({'name': r['product_category']}).id
-           val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'].strip(), 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
+           val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'].strip(), 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'consu','to_weight':to_weight,'detailed_type':'consu','available_in_pos':True,'pos_categ_id':categ_id}
            if barcode:
              val.update({'barcode':barcode})
                    
