@@ -128,8 +128,8 @@ class bidfood_sale(models.Model):
         for r in create_product:
             barcode = ''
             to_weight = False
-            if r['barcode'].strip():
-                barcode = r['barcode']
+            if r['barcode']:
+              barcode =r['barcode'].strip()
             if r['rndwght'] != 0:
                 to_weight = True
             categ_id = product_categ_obj.search([('name', '=',
@@ -184,18 +184,17 @@ class bidfood_sale(models.Model):
         for r in create_product:
             val = {}
             barcode = ''
+            temp = ''
             product = self.env['product.template'].browse(r['product_id'
                     ])
             to_weight = False
-            temp = r['barcode'].strip()
+            if r['barcode'] :
+                temp = r['barcode'].strip()
             int_ref = r['internal_Reference'].strip()
-            if product.barcode and product.barcode != temp:
+            #if product.barcode and product.barcode != temp:
+            if (temp or product.barcode) and  (product.barcode != temp or product.barcode not in (False,'')):
                 barcode = r['barcode'].strip()
                 val.update({'barcode': barcode})
-
-           # if r['rndwght']!=0:
-           #    to_weight=True
-
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
             if categ_id:
