@@ -156,14 +156,18 @@ class bidfood_sale(models.Model):
                 val.update({'barcode': barcode})
 
             try:
-                product.create(val)
-                log_book_id = product_log.create({
-                    'name': r['product_name'],
-                    'product_big': product_big.id,
-                    'etype': 'done',
-                    'ttype': 'create',
-                    'payload': r,
-                    })
+                p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
+                if p_id and not p_id.barcode and barcode:
+                    p_id.barcode = barcode
+                if not p_id:
+                    product.create(val)
+                    log_book_id = product_log.create({
+                        'name': r['product_name'],
+                        'product_big': product_big.id,
+                        'etype': 'done',
+                        'ttype': 'create',
+                        'payload': r,
+                        })
             except Exception as error:
                 log_book_id = product_log.create({
                     'name': r['product_name'],
