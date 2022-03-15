@@ -252,7 +252,16 @@ class bidfood_sale(models.Model):
             data={}
             data = {'posSalesOrderNr': pos.pos_reference,
                     'branch':"BVPOL", #pos.session_id.config_id.name,
-                    'docType': 3}
+                    'docType': 3,
+                    'docId':pos.pos_reference,
+                    'SOPNUMBE':pos.name,
+                    'TAXSCHID':'OUTPUTVAT - 15%',
+                    'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
+                    'CUSTNMBR':pos.partner_id.ref,
+                    'SUBTOTAL':pos.amount_total - pos.amount_tax,
+                    'DOCAMNT':pos.amount_total,
+                    'PYMTRCVD':pos.amount_paid,
+                    'TAXAMNT':pos.amount_tax,}
             order_line = []
             for line in pos.lines:
                 line_dict = {'itemCode': (line.product_id.default_code).strip(),
@@ -276,7 +285,7 @@ class bidfood_sale(models.Model):
         response = requests.request("POST", url, headers=headers, data=payload)
         print("********respresp********",response.text, response.status_code)  
         product_log = self.env['product.big.log']
-        if response.status_code == 200:
+        if res.get('response') == 'Success':
              log_book_id = product_log.create({
                         'name':'BVPOL',
                         'product_big': product_big.id,
