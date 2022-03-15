@@ -295,7 +295,7 @@ class bidfood_sale(models.Model):
                         })
         else:
             log_book_id = product_log.create({
-                    'name': product.name,
+                    'name': 'Fail',
                     'product_big': product_big.id,
                     'etype': 'fail',
                     'ttype': 'create',
