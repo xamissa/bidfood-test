@@ -283,7 +283,7 @@ class bidfood_sale(models.Model):
 }
 
         response = requests.request("POST", url, headers=headers, data=payload)
-        print("********respresp********",response.text, response.status_code)  
+        res = response.json()
         product_log = self.env['product.big.log']
         if res.get('response') == 'Success':
              log_book_id = product_log.create({
