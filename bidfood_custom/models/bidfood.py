@@ -251,29 +251,50 @@ class bidfood_sale(models.Model):
     def bidfood_sale_order(self, orders):
         data_push = ''
         con=''
-        
         for pos in orders:
             data={}
-            data = {'posSalesOrderNr': pos.pos_reference,
-                    'branch':"BVPOL", #pos.session_id.config_id.name,
-                    'docType': 3,
-                    'docId':pos.pos_reference,
-                    'SOPNUMBE':pos.name,
-                    'TAXSCHID':'OUTPUTVAT - 15%',
-                    'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
-                    'CUSTNMBR':pos.partner_id.ref,
-                    'SUBTOTAL':pos.amount_total - pos.amount_tax,
-                    'DOCAMNT':pos.amount_total,
-                    'PYMTRCVD':pos.amount_paid,
-                    'TAXAMNT':pos.amount_tax,}
-            order_line = []
-            for line in pos.lines:
-                line_dict = {'itemCode': (line.product_id.default_code).strip(),
-                             'itemDescription': line.product_id.name,
-                             'quantity': line.qty}
-                order_line.append(line_dict)
-                
-            data['invoiceLines']=order_line
+            if pos.refunded_order_ids:
+                data = {'posSalesOrderNr': pos.pos_reference,
+                        'branch':"BVPOL", #pos.session_id.config_id.name,
+                        'docType': 4,
+                        'docId':pos.pos_reference,
+                        'SOPNUMBE':pos.name,
+                        'TAXSCHID':'OUTPUTVAT - 15%',
+                        'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
+                        'CUSTNMBR':pos.partner_id.ref,
+                        'SUBTOTAL':pos.amount_total - pos.amount_tax,
+                        'DOCAMNT':pos.amount_total,
+                        'PYMTRCVD':pos.amount_paid,
+                        'TAXAMNT':pos.amount_tax,
+                        }
+                order_line = []
+                for line in pos.lines:
+                    line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
+                                 'itemDescription': line.product_id.name,
+                                 'quantity': line.qty,
+                                 }
+                    order_line.append(line_dict)
+                data['invoiceLines']=order_line
+            else:
+                data = {'posSalesOrderNr': pos.pos_reference,
+                        'branch':"BVPOL", #pos.session_id.config_id.name,
+                        'docType': 3,
+                        'docId':pos.pos_reference,
+                        'SOPNUMBE':pos.name,
+                        'TAXSCHID':'OUTPUTVAT - 15%',
+                        'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
+                        'CUSTNMBR':pos.partner_id.ref,
+                        'SUBTOTAL':pos.amount_total - pos.amount_tax,
+                        'DOCAMNT':pos.amount_total,
+                        'PYMTRCVD':pos.amount_paid,
+                        'TAXAMNT':pos.amount_tax,}
+                order_line = []
+                for line in pos.lines:
+                    line_dict = {'itemCode': (line.product_id.default_code).strip(),
+                                 'itemDescription': line.product_id.name,
+                                 'quantity': line.qty}
+                    order_line.append(line_dict)
+                data['invoiceLines']=order_line
             #data_push.append(data)
             data_push = json.dumps(data)
             self.bidfood_send(data_push)
