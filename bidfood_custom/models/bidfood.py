@@ -187,6 +187,7 @@ class bidfood_sale(models.Model):
         product_big = self.env['product.big'].create({'name': 'Test'})
         for r in create_product:
             val = {}
+            print(r)
             barcode = ''
             temp = ''
             product = self.env['product.template'].browse(r['product_id'
@@ -196,7 +197,7 @@ class bidfood_sale(models.Model):
                 temp = r['barcode'].strip()
             int_ref = r['internal_Reference'].strip()
             #if product.barcode and product.barcode != temp:
-            if (temp or product.barcode) and  (product.barcode != temp or product.barcode not in (False,'')):
+            if (temp or product.barcode) and  (product.barcode != temp):
                 barcode = r['barcode'].strip()
                 val.update({'barcode': barcode})
             categ_id = product_categ_obj.search([('name', '=',
@@ -226,9 +227,10 @@ class bidfood_sale(models.Model):
                 val.update({'pos_categ_id': int(categ_id)})
             if product.available_in_pos != True:
                 val.update({'available_in_pos': True})
-
+            print("=============vals",val)
             try:
                 if val:
+                    print("=============vals",val)
                     product.write(val)
                     log_book_id = product_log.create({
                         'name': product.name,
@@ -238,6 +240,7 @@ class bidfood_sale(models.Model):
                         'payload': r,
                         })
             except Exception as error:
+                print("======except=======vals",val)
                 log_book_id = product_log.create({
                     'name': product.name,
                     'product_big': product_big.id,
@@ -328,4 +331,3 @@ class bidfood_sale(models.Model):
                     'error': str(response.text),
                     })
         return True
-
