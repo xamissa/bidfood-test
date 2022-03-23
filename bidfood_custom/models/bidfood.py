@@ -298,7 +298,8 @@ class bidfood_sale(models.Model):
                 for line in pos.lines:
                     line_dict = {'itemCode': (line.product_id.default_code).strip(),
                                  'itemDescription': line.product_id.name,
-                                 'quantity': line.qty}
+                                 'quantity': line.qty,
+                                 'price': round(line.price_unit, 2)}
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
             #data_push.append(data)
