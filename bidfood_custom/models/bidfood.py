@@ -22,6 +22,8 @@ class Productemplate(models.Model):
 
     _inherit = 'product.template'
     gp_unit = fields.Char(string='GP Unit')
+    creation_date=fields.DateTime(string="Creation Date")
+    modify_date=fields.DateTime(string="Modified Date")
 
 
 class product_big(models.Model):

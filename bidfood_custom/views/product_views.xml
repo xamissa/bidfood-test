@@ -12,6 +12,8 @@
                 <page name="BidFood  Details" string="BidFood ">
                     <group >
                         <field name="gp_unit" />
+                        <field name="creation_date" />
+                        <field name="modify_date" />
                     </group>
                 </page>
             </xpath>
