@@ -11,7 +11,7 @@ import requests
 import string
 import requests
 import json
-import dateTime
+import datetime
 from dateutil.parser import parse
 from requests.structures import CaseInsensitiveDict
 from odoo import fields, models, api, _
