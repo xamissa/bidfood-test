@@ -11,7 +11,8 @@ import requests
 import string
 import requests
 import json
-import datetime
+from datetime import datetime,date
+from datetime import timezone
 from dateutil.parser import parse
 from requests.structures import CaseInsensitiveDict
 from odoo import fields, models, api, _
@@ -129,6 +130,8 @@ class bidfood_sale(models.Model):
         product_categ_obj = self.env['pos.category']
         product_big = self.env['product.big'].create({'name': 'Test'})
         for r in create_product:
+            cr_date = datetime.strptime(r['creatddt'], "%Y-%m-%dT%H:%M:%S")
+            md_date = datetime.strptime(r['modifdt'], "%Y-%m-%dT%H:%M:%S")
             barcode = ''
             to_weight = False
             if r['barcode']:
@@ -149,6 +152,8 @@ class bidfood_sale(models.Model):
                 'default_code': r['internal_Reference'].strip(),
                 'list_price': r['cost'],
                 'gp_unit': r['unit_of_measure'],
+                'creation_date':cr_date,
+                'modify_date':md_date,
                 'type': 'consu',
                 'to_weight': to_weight,
                 'detailed_type': 'consu',
