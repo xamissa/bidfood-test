@@ -278,10 +278,10 @@ class bidfood_sale(models.Model):
                         'TAXSCHID':'OUTPUTVAT - 15%',
                         'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
                         'CUSTNMBR':pos.partner_id.ref,
-                        'SUBTOTAL':pos.amount_total - pos.amount_tax,
-                        'DOCAMNT':pos.amount_total,
-                        'PYMTRCVD':pos.amount_paid,
-                        'TAXAMNT':pos.amount_tax,
+                        'SUBTOTAL':abs(pos.amount_total - pos.amount_tax),
+                        'DOCAMNT':abs(pos.amount_total),
+                        'PYMTRCVD':abs(pos.amount_paid),
+                        'TAXAMNT':abs(pos.amount_tax),
                         }
                 order_line = []
                 for line in pos.lines:
