@@ -27,6 +27,11 @@ class Productemplate(models.Model):
     creation_date=fields.Datetime(string="Creation Date")
     modify_date=fields.Datetime(string="Modified Date")
 
+class PosOrder(models.Model):
+
+    _inherit = 'pos.order'
+    invoiceNumber = fields.Char(string='Invoice Number')
+
 
 class product_big(models.Model):
 
@@ -58,7 +63,7 @@ class product_big_log(models.Model):
 
     name = fields.Char(string='Name')
     payload = fields.Text(string='Payload')
-    error = fields.Text(string='Error')
+    error = fields.Text(string='Message')
     ttype = fields.Selection([('create', 'Create'), ('update', 'Update'
                              )], string='Operation')
     etype = fields.Selection([('fail', 'Fail'), ('done', 'Done')],
@@ -330,6 +335,7 @@ class bidfood_sale(models.Model):
                         'etype': 'done',
                         'ttype': 'create',
                         'payload': payload,
+                        'error': str(response.text),
                         })
         else:
             log_book_id = product_log.create({
