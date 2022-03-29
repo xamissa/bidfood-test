@@ -289,7 +289,7 @@ class bidfood_sale(models.Model):
                                  'itemDescription': line.product_id.name,
                                  'quantity': line.qty,
                                  'price': round(line.price_unit, 2),
-                                 'lineTotal': price_subtotal_incl
+                                 'lineTotal': line.price_subtotal_incl
                                  }
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
@@ -311,7 +311,7 @@ class bidfood_sale(models.Model):
                     line_dict = {'itemCode': (line.product_id.default_code).strip(),
                                  'itemDescription': line.product_id.name,
                                  'quantity': line.qty,
-                                   'lineTotal': price_subtotal_incl,
+                                   'lineTotal': line.price_subtotal_incl,
                                  'price': round(line.price_unit, 2)}
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
