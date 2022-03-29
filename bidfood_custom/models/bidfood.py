@@ -240,10 +240,9 @@ class bidfood_sale(models.Model):
                 val.update({'pos_categ_id': int(categ_id)})
             if product.available_in_pos != True:
                 val.update({'available_in_pos': True})
-            print("=============vals",val)
+
             try:
                 if val:
-                    print("=============vals",val)
                     product.write(val)
                     log_book_id = product_log.create({
                         'name': product.name,
