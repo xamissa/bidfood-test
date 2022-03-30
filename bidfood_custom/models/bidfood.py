@@ -282,6 +282,7 @@ class bidfood_sale(models.Model):
                         'branch':"BVPOL", #pos.session_id.config_id.name,
                         'docType': 4,
                         'paymentType':paymentType,
+                        
                        # 'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
@@ -298,6 +299,7 @@ class bidfood_sale(models.Model):
                                  'itemDescription': line.product_id.name,
                                  'quantity': line.qty,
                                  'price': round(line.price_unit, 2),
+                                  'uom':line.product_id.gp_unit,
                                  'lineTotal': line.price_subtotal_incl
                                  }
                     order_line.append(line_dict)
@@ -326,6 +328,7 @@ class bidfood_sale(models.Model):
                     line_dict = {'itemCode': (line.product_id.default_code).strip(),
                                  'itemDescription': line.product_id.name,
                                  'quantity': line.qty,
+                                  'uom':line.product_id.gp_unit,
                                    'lineTotal': line.price_subtotal_incl,
                                  'price': round(line.price_unit, 2)}
                     order_line.append(line_dict)
