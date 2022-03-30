@@ -268,10 +268,19 @@ class bidfood_sale(models.Model):
         con=''
         for pos in orders:
             data={}
+            payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
+            print(payment_id)
+            paymentType=''
             if pos.refunded_order_ids:
+                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','!=','return'),('session_id','=',pos.session_id.id)])
+                if payment_id.payment_method_id.name=='Cash':
+                   paymentType='4'
+                if payment_id.payment_method_id.name=='Card':
+                   paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':"BVPOL", #pos.session_id.config_id.name,
                         'docType': 4,
+                        'paymentType':paymentType,
                        # 'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
@@ -293,9 +302,15 @@ class bidfood_sale(models.Model):
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
             else:
+                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','!=','return'),('session_id','=',pos.session_id.id)])
+                if payment_id.payment_method_id.name=='Cash':
+                   paymentType='4'
+                if payment_id.payment_method_id.name=='Card':
+                   paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':"BVPOL", #pos.session_id.config_id.name,
                         'docType': 3,
+                         'paymentType':paymentType,
                         #'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
