@@ -268,6 +268,7 @@ class bidfood_sale(models.Model):
         con=''
         for pos in orders:
             data={}
+            pos_pay = self.env['pos.payment']
             payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
             print(payment_id)
             paymentType=''
