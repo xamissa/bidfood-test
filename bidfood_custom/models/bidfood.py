@@ -273,7 +273,7 @@ class bidfood_sale(models.Model):
             print(payment_id)
             paymentType=''
             if pos.refunded_order_ids:
-                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','!=','return'),('session_id','=',pos.session_id.id)])
+                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','=','return'),('session_id','=',pos.session_id.id)])
                 if payment_id.payment_method_id.name=='Cash':
                    paymentType='4'
                 if payment_id.payment_method_id.name=='Card':
