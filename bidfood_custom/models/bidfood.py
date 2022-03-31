@@ -297,7 +297,7 @@ class bidfood_sale(models.Model):
                 for line in pos.lines:
                     line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
                                  'itemDescription': line.product_id.name,
-                                 'quantity': line.qty,
+                                 'quantity': abs(line.qty),
                                  'price': round(line.price_unit, 2),
                                   'uom':line.product_id.gp_unit,
                                  'lineTotal': line.price_subtotal_incl
