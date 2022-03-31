@@ -300,7 +300,7 @@ class bidfood_sale(models.Model):
                                  'quantity': abs(line.qty),
                                  'price': round(line.price_unit, 2),
                                   'uom':line.product_id.gp_unit,
-                                 'lineTotal': line.price_subtotal_incl
+                                 'lineTotal': abs(line.price_subtotal_incl)
                                  }
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
