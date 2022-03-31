@@ -282,7 +282,6 @@ class bidfood_sale(models.Model):
                         'branch':"BVPOL", #pos.session_id.config_id.name,
                         'docType': 4,
                         'paymentType':paymentType,
-                        
                        # 'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
