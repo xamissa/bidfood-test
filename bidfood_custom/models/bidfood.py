@@ -167,6 +167,8 @@ class bidfood_sale(models.Model):
                 }
             if barcode:
                 val.update({'barcode': barcode})
+            if r['customer_taxes'] == 'ZEROVAT SALES':
+                val.update({'taxes_id':[(6,0,[])]})
 
             try:
                 p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
