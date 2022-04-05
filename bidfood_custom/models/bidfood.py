@@ -244,6 +244,8 @@ class bidfood_sale(models.Model):
                 val.update({'pos_categ_id': int(categ_id)})
             if product.available_in_pos != True:
                 val.update({'available_in_pos': True})
+            if product.branch != r['branch']:
+                val.update({'branch': r['branch']})
 
             try:
                 if val:
