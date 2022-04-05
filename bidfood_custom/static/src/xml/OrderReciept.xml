@@ -18,18 +18,21 @@
             </div>
         </xpath>
         <xpath expr="//t[@t-if='receipt.company.contact_address']" position="after">
-             <t t-if="receipt.company.street">
-                    <div><t t-esc="receipt.company.street" /></div>
-            </t>
-            <t t-if="receipt.company.street2">
-                    <div><t t-esc="receipt.company.street2" /></div>
-            </t>
-            <t t-if="receipt.company.city">
-                    <div><t t-esc="receipt.company.city" /></div>
-            </t>
-            <t t-if="receipt.company.zip">
-                    <div><t t-esc="receipt.company.zip" /></div>
-            </t>
+             <div>
+                <t t-if="receipt.company.street">
+                        <t t-esc="receipt.company.street" />
+                </t>
+                <t t-if="receipt.company.street2">
+                        ,<t t-esc="receipt.company.street2" />,
+                </t>
+                <t t-if="receipt.company.city">
+                        <br/><t t-esc="receipt.company.city" />
+                </t>
+                <t t-if="receipt.company.zip">
+                        ,<t t-esc="receipt.company.zip" />.
+                </t>
+            </div>
+            <br/>
         </xpath>
 
         <xpath expr="//t[@t-if='receipt.company.vat']" position="replace">
@@ -49,7 +52,7 @@
                     <div><t t-esc="receipt.client.address" /></div>
                 </t>
                 <t t-if="receipt.client.vat">
-                    <div>VAT registration number:<t t-esc="receipt.client.vat" /></div>
+                    <div>VAT :<t t-esc="receipt.client.vat" /></div>
                 </t>
             </div>
             <center><div>--------------------------------</div></center><br/>
@@ -71,7 +74,7 @@
                     </div>
                 </t>
                 <div>
-                    * = NON-VAT item
+                    * NON-VAT item
                 </div>
                 
             </div>
@@ -92,7 +95,7 @@
                     </tr>
                     <t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
                         <t t-if="isSimple(line)">
-                                <tr style="border-bottom: 1px solid black;">
+                                <tr style="border-bottom: 1px solid black;font-size:75%;">
                                     <td><t t-esc="line.default_code"/></td>
                                     <td><t t-esc="line.product_name"/></td>
                                     <td><t t-esc="line.quantity"/></td>
