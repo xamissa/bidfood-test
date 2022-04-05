@@ -14,6 +14,15 @@
         'views/product_views.xml',
       
     ],
+     'assets': {
+
+        'point_of_sale.assets': [
+            'bidfood_custom/static/src/js/models.js',
+            ],
+        'web.assets_qweb': [
+           'bidfood_custom/static/src/xml/**/*',
+        ],
+    },
     'depends': ['point_of_sale'],
     'qweb': [''],
     'installable': True,
