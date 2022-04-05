@@ -177,7 +177,7 @@ class bidfood_sale(models.Model):
             if r['blocked'] == 1:
                 val.update({'available_in_pos': False})
             if r['unit_of_measure'] == 'KG':
-                val.update({'uom_id': 12})
+                val.update({'uom_id': 12, 'uom_po_id': 12})
 
             try:
                 p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
