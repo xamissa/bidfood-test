@@ -26,6 +26,7 @@ class Productemplate(models.Model):
     gp_unit = fields.Char(string='GP Unit')
     creation_date=fields.Datetime(string="Creation Date")
     modify_date=fields.Datetime(string="Modified Date")
+    branch = fields.Char(string="Branch")
 
 class PosOrder(models.Model):
 
@@ -159,6 +160,7 @@ class bidfood_sale(models.Model):
                 'gp_unit': r['unit_of_measure'],
                 'creation_date':cr_date,
                 'modify_date':md_date,
+                'branch':r['branch'],
                 'type': 'consu',
                 'to_weight': to_weight,
                 'detailed_type': 'consu',
@@ -281,7 +283,7 @@ class bidfood_sale(models.Model):
                 if payment_id.payment_method_id.name=='Card':
                    paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
-                        'branch':"BVPOL", #pos.session_id.config_id.name,
+                        'branch':pos.session_id.config_id.branch,
                         'docType': 4,
                         'paymentType':paymentType,
                        # 'docId':pos.pos_reference,
@@ -312,7 +314,7 @@ class bidfood_sale(models.Model):
                 if payment_id.payment_method_id.name=='Card':
                    paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
-                        'branch':"BVPOL", #pos.session_id.config_id.name,
+                        'branch':pos.session_id.config_id.branch,
                         'docType': 3,
                          'paymentType':paymentType,
                         #'docId':pos.pos_reference,
@@ -351,7 +353,6 @@ class bidfood_sale(models.Model):
         product_log = self.env['product.big.log']
         if res.get('response') == 'Success':
              log_book_id = product_log.create({
-                        'name':'BVPOL',
                         'product_big': product_big.id,
                         'etype': 'done',
                         'ttype': 'create',

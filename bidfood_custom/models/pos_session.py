@@ -14,9 +14,15 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
+class pos_config(models.Model):
+    _inherit = "pos.config"
+
+    branch=fields.Char(string="Branch")
 
 class pos_session(models.Model):
     _inherit = "pos.session"
+
+    branch=fields.Char(string="Branch",related='config_id.branch')
     
     def action_pos_session_close(self, balancing_account=False, amount_to_balance=0, bank_payment_method_diffs=None):
         res= super(pos_session, self).action_pos_session_close(balancing_account, amount_to_balance,bank_payment_method_diffs)
