@@ -171,6 +171,11 @@ class bidfood_sale(models.Model):
                 val.update({'barcode': barcode})
             if r['customer_taxes'] == 'ZEROVAT SALES':
                 val.update({'taxes_id':[(6,0,[])]})
+            print("r['blocked']---------------",type(r['blocked']))
+            if r['blocked'] == 0:
+                val.update({'available_in_pos': True})
+            if r['blocked'] == 1:
+                val.update({'available_in_pos': False})
 
             try:
                 p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
@@ -246,6 +251,11 @@ class bidfood_sale(models.Model):
                 val.update({'available_in_pos': True})
             if product.branch != r['branch']:
                 val.update({'branch': r['branch']})
+            print("r['blocked']>>>>>>>>>>>>>>>",type(r['blocked']))
+            if r['blocked'] == 0:
+                val.update({'available_in_pos': True})
+            if r['blocked'] == 1:
+                val.update({'available_in_pos': False})
 
             try:
                 if val:
