@@ -61,7 +61,30 @@
             </div>
         </xpath>
 
+        <xpath expr="//t[@t-foreach='receipt.paymentlines']" position="replace">
+            <t t-foreach="receipt.paymentlines" t-as="line" t-key="line.cid">
+                <div style="font-size:85%; margin-top:-2%;">
+                    <t t-esc="line.name" />
+                    <span t-esc="env.pos.format_currency_no_symbol(line.amount)" class="pos-receipt-right-align"/>
+                </div>
+            </t>
+        </xpath>
+
         <xpath expr="//t[@t-if='receipt.cashier']" position="replace">
+        </xpath>
+
+        <xpath expr="//t[@t-if='!isTaxIncluded']" position="replace">
+            <t t-if="!isTaxIncluded">
+                <div class="pos-receipt-right-align">--------</div>
+                <br/>
+                <div style="font-size:85%;">Subtotal<span t-esc="env.pos.format_currency(receipt.subtotal)" class="pos-receipt-right-align"/></div>
+                <t t-foreach="receipt.tax_details" t-as="tax" t-key="tax.name">
+                    <div class="responsive-price" style="font-size:85%;">
+                        <t t-esc="tax.name" />
+                        <span t-esc='env.pos.format_currency_no_symbol(tax.amount)' class="pos-receipt-right-align"/>
+                    </div>
+                </t>
+            </t>
         </xpath>
 
         <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="replace">
@@ -80,29 +103,44 @@
             </div>
         </xpath>
 
+        <xpath expr="//div[hasclass('pos-receipt-amount')]" position="replace">
+            <div class="pos-receipt-amount" style="font-size:85%;">
+                <strong>TOTAL
+                <span t-esc="env.pos.format_currency(receipt.total_with_tax)" class="pos-receipt-right-align"/></strong>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('receipt-change')]" position="replace">
+            <div class="pos-receipt-amount receipt-change" style="font-size:85%;">
+               <strong> CHANGE
+                <span t-esc="env.pos.format_currency(receipt.change)" class="pos-receipt-right-align"/></strong>
+            </div>
+        </xpath>
+
     </t>
     <t t-name="OrderRecLine" t-inherit="point_of_sale.OrderLinesReceipt" t-inherit-mode="extension" owl="1">
         <xpath expr="//t[@t-foreach='receipt.orderlines']" position="replace">
              <table style="width:100%;" class="responsive-price">
                 <tbody>
-                    <tr style="border-bottom: 1px solid black;border-top: 1px solid black;">
-                        <td><strong>Internal Ref</strong></td>
-                        <td><strong>Product</strong></td>
-                        <td><strong>Qty</strong></td>
+                    <tr style="border-bottom: 1px solid black;border-top: 1px solid black;font-size:85%;">
+                        <td style="width:27%;"><strong>Internal Ref.</strong></td>
+                        <td style="width:50%;text-align:center;"><strong>Product</strong></td>
+                        <td style="text-align:left;width:3%;"><strong>Qty</strong></td>
+
                        <!--  <td><strong>UOM</strong></td> -->
-                        <td><strong>Price</strong></td>
-                        <td></td>
+                        <td style="text-align:right;width:19%;"><strong>Price</strong></td>
+                        <td style="width:1%;"></td>
                     </tr>
                     <t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
                         <t t-if="isSimple(line)">
                                 <tr style="border-bottom: 1px solid black;font-size:75%;">
-                                    <td><t t-esc="line.default_code"/></td>
-                                    <td><t t-esc="line.product_name"/></td>
-                                    <td><t t-esc="line.quantity"/></td>
+                                    <td style="width:27%;"><t t-esc="line.default_code"/></td>
+                                    <td style="width:50%;"><t t-esc="line.product_name"/></td>
+                                    <td style="text-align:center;width:3%"><t t-esc="line.quantity"/></td>
                                     <!-- <td><t t-esc="line.unit_name"/></td> -->
-                                    <td style="text-align:right;"><t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/></td>
+                                    <td style="text-align:right;width:19%;"><t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/></td>
                                     <t t-if="line.price_without_tax == line.price_with_tax">
-                                        <td>*</td>
+                                        <td style="width:1%;">*</td>
                                     </t>
                                 </tr>
                         </t>
@@ -116,14 +154,14 @@
                                     <t t-esc="env.pos.format_currency_no_symbol(line.price)" />
                                 </div>
                             </t> -->
-                            <tr style="border-bottom: 1px solid black;">
-                                <td><t t-esc="line.default_code"/></td>
-                                <td><t t-esc="line.product_name"/></td>
-                                <td><t t-esc="line.quantity"/></td>
+                            <tr style="border-bottom: 1px solid black;font-size:75%;">
+                                <td style="width:27%;"><t t-esc="line.default_code"/></td>
+                                <td style="width:50%;"><t t-esc="line.product_name"/></td>
+                                <td style="text-align:center;width:3%"><t t-esc="line.quantity"/></td>
                                 <!-- <td><t t-esc="line.unit_name"/></td> -->
-                                <td style="text-align:right;"><t t-esc="env.pos.format_currency_no_symbol(line.price_display_one)"/></td>
+                                <td style="text-align:right;width:19%;"><t t-esc="env.pos.format_currency_no_symbol(line.price_display_one)"/></td>
                                 <t t-if="line.price_without_tax == line.price_with_tax">
-                                    <td>*</td>
+                                    <td style="width:1%;">*</td>
                                 </t>
                             </tr>
                            <!--  <t t-elif="line.discount !== 0">
@@ -137,7 +175,7 @@
                                 </div>
                             </t> -->
                             <t t-if="line.discount !== 0">
-                                <div class="pos-receipt-left-padding">
+                                <div class="pos-receipt-left-padding" style="font-size:85%;">
                                     Discount: <t t-esc="line.discount" />%
                                 </div>
                             </t>
