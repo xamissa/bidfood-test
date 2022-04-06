@@ -2,11 +2,31 @@ odoo.define("bidfood_custom.models", function (require) {
   "use strict";
 
   const models = require("point_of_sale.models");
-
-
+  
+  var exports = {};
   models.load_fields('res.company', ['street', 'street2', 'city', 'zip']);
   models.load_fields('res.partner', ['street', 'street2', 'city', 'zip']);
   models.load_fields('pos.order', ['refunded_orders_count']);
+  models.load_fields('product.template', ['branch']);
+  models.load_fields('pos.config', ['branch']);
+
+
+var existing_models = models.PosModel.prototype.models;
+var product_index = _.findIndex(existing_models, function (model) {
+    return model.model === "product.product";
+});
+var product_model = existing_models[product_index];
+
+models.load_models([{
+  model:  product_model.model,
+  fields: product_model.fields,
+  order:  product_model.order,
+  domain: function(self) {return [['branch', '=', self.config.branch]];},
+  loaded: product_model.loaded,
+}]);
+
+models.load_fields("product.product", ["branch"]);
+
 
 
   var _super_order = models.Order.prototype;

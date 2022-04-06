@@ -28,6 +28,11 @@ class Productemplate(models.Model):
     modify_date=fields.Datetime(string="Modified Date")
     branch = fields.Char(string="Branch")
 
+class ProductProduct(models.Model):
+    _inherit = 'product.product'
+
+    branch = fields.Char(string="Branch", related="product_tmpl_id.branch")
+
 class PosOrder(models.Model):
 
     _inherit = 'pos.order'
