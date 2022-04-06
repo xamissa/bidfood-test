@@ -69,6 +69,8 @@
                     <t t-esc="line.name" />
                     <span t-esc="env.pos.format_currency_no_symbol(line.amount)" class="pos-receipt-right-align"/>
                 </div>
+                <span>-------------------------------</span>
+                <br/>
             </t>
         </xpath>
 

@@ -328,14 +328,15 @@ class bidfood_sale(models.Model):
                 data['invoiceLines']=order_line
             else:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','!=','return'),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
-                if payment_id.payment_method_id.name=='Cash':
-                   paymentType='4'
-                if payment_id.payment_method_id.name=='Card':
-                   paymentType='6'
+                for i in payment_id:
+                    if i.payment_method_id.name=='Cash':
+                       paymentType='4'
+                    if i.payment_method_id.name=='Card':
+                       paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':pos.session_id.config_id.branch,
                         'docType': 3,
-                         'paymentType':paymentType,
+                        'paymentType':paymentType,
                         #'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
