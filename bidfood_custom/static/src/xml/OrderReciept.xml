@@ -41,24 +41,26 @@
             </t>
         </xpath>
 
-        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="after">   
-            <center><div>--------------------------------</div>
-            <div><strong>Customer Details</strong></div></center>
-            <div class="pos-receipt-contact">                    
-                <t t-if="receipt.client.name">
-                    <strong><div><t t-esc="receipt.client.name" /></div></strong>
-                </t>  
-                <t t-if="receipt.client.address">
-                    <div><t t-esc="receipt.client.address" /></div>
-                </t>
-                <t t-if="receipt.client.vat">
-                    <div>VAT :<t t-esc="receipt.client.vat" /></div>
-                </t>
-            </div>
-            <center><div>--------------------------------</div></center><br/>
-            <div class="pos-receipt-contact">
-                <span><strong>Date: </strong><t t-esc="receipt.date.localestring" /></span>
-            </div>
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="after">
+            <t t-if="receipt.client">
+                <center><div>--------------------------------</div>
+                <div><strong>Customer Details</strong></div></center>
+                <div class="pos-receipt-contact">
+                     <t t-if="receipt.client.name">
+                        <strong><div><t t-esc="receipt.client.name" /></div></strong>
+                    </t>
+                   <t t-if="receipt.client.address">
+                        <div><t t-esc="receipt.client.address" /></div>
+                    </t>
+                    <t t-if="receipt.client.vat">
+                        <div>VAT :<t t-esc="receipt.client.vat" /></div>
+                    </t>
+                </div>
+                <center><div>--------------------------------</div></center><br/>
+                <div class="pos-receipt-contact">
+                    <span><strong>Date: </strong><t t-esc="receipt.date.localestring" /></span>
+                </div>
+            </t>
         </xpath>
 
         <xpath expr="//t[@t-foreach='receipt.paymentlines']" position="replace">
