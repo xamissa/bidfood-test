@@ -180,7 +180,7 @@ class bidfood_sale(models.Model):
                 'creation_date':cr_date,
                 'modify_date':md_date,
                 'branch':r['branch'],
-                'siteid':r['siteid'],
+                'siteid':r['siteID'],
                 'type': 'consu',
                 'to_weight': to_weight,
                 'detailed_type': 'consu',
