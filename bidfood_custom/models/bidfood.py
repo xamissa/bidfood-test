@@ -33,11 +33,13 @@ class Productemplate(models.Model):
     creation_date=fields.Datetime(string="Creation Date")
     modify_date=fields.Datetime(string="Modified Date")
     branch = fields.Char(string="Branch")
+    siteid = fields.Char(string="SiteID")
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     branch = fields.Char(string="Branch", related="product_tmpl_id.branch")
+    siteid = fields.Char(string="SiteID", related="product_tmpl_id.siteid")
 
 class PosOrder(models.Model):
 
@@ -178,6 +180,7 @@ class bidfood_sale(models.Model):
                 'creation_date':cr_date,
                 'modify_date':md_date,
                 'branch':r['branch'],
+                'siteid':r['siteid'],
                 'type': 'consu',
                 'to_weight': to_weight,
                 'detailed_type': 'consu',
