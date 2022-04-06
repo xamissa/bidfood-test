@@ -24,7 +24,7 @@ _logger = logging.getLogger(__name__)
 class res_company(models.Model):
     _inherit = 'res.company'
     branch = fields.Char(string="Branch")
-    siteID = fields.Char(string="SiteID")
+    siteid = fields.Char(string="SiteID")
 
 class Productemplate(models.Model):
 
