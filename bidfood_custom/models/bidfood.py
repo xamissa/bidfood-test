@@ -20,6 +20,12 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
+
+class res_company(models.Model):
+    _inherit = 'res.company'
+    branch = fields.Char(string="Branch")
+    siteID = fields.Char(string="SiteID")
+
 class Productemplate(models.Model):
 
     _inherit = 'product.template'
@@ -139,6 +145,8 @@ class bidfood_sale(models.Model):
         product = self.env['product.template']
         product_log = self.env['product.big.log']
         product_categ_obj = self.env['pos.category']
+        company_obj = self.env['res.company']
+        uom_obj=self.env['uom.uom']
         product_big = self.env['product.big'].create({'name': 'Test'})
         for r in create_product:
             cr_date = datetime.strptime(r['creatddt'], "%Y-%m-%dT%H:%M:%S")
@@ -151,17 +159,21 @@ class bidfood_sale(models.Model):
                 to_weight = True
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
+            company_id = company_obj.search([('branch', '=',
+                    r['branch'])])
             if categ_id:
                 categ_id = categ_id.id
             else:
                 categ_id = \
                     product_categ_obj.create({'name': r['product_category'
                         ]}).id
+            if company_id:
+               company_id = company_id.id
             val = {
                 'name': r['product_name'],
                 'active': True,
                 'default_code': r['internal_Reference'].strip(),
-                'list_price': r['cost'],
+                'list_price': r['sellingPrice'],
                 'gp_unit': r['unit_of_measure'],
                 'creation_date':cr_date,
                 'modify_date':md_date,
@@ -171,6 +183,7 @@ class bidfood_sale(models.Model):
                 'detailed_type': 'consu',
                 'available_in_pos': True,
                 'pos_categ_id': categ_id,
+                'company_id':company_id
                 }
             if barcode:
                 val.update({'barcode': barcode})
@@ -181,8 +194,10 @@ class bidfood_sale(models.Model):
                 val.update({'available_in_pos': True})
             if r['blocked'] == 1:
                 val.update({'available_in_pos': False})
-            if r['unit_of_measure'] == 'KG':
-                val.update({'uom_id': 12, 'uom_po_id': 12})
+            if r['unit_of_measure'] :
+               uom_id=uom_obj.search([('name','=',r['unit_of_measure'])],limit=1)
+               if uom_id:
+                  val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
 
             try:
                 p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
@@ -244,8 +259,8 @@ class bidfood_sale(models.Model):
                 val.update({'name': r['product_name']})
             if product.default_code != int_ref:
                 val.update({'default_code': int_ref})
-            if product.list_price != r['cost']:
-                val.update({'list_price': r['cost']})
+            if product.list_price != r['sellingPrice']:
+                val.update({'list_price': r['sellingPrice']})
             if product.gp_unit != r['unit_of_measure']:
                 val.update({'gp_unit': r['unit_of_measure']})
 
@@ -275,7 +290,6 @@ class bidfood_sale(models.Model):
                         'payload': r,
                         })
             except Exception as error:
-                print("======except=======vals",val)
                 log_book_id = product_log.create({
                     'name': product.name,
                     'product_big': product_big.id,
@@ -302,7 +316,8 @@ class bidfood_sale(models.Model):
                 if payment_id.payment_method_id.name=='Card':
                    paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
-                        'branch':pos.session_id.config_id.branch,
+                        'branch':pos.company_id.branch,
+                       # 'siteID':pos.company_id.siteID,
                         'docType': 4,
                         'paymentType':paymentType,
                        # 'docId':pos.pos_reference,
@@ -334,7 +349,8 @@ class bidfood_sale(models.Model):
                     if i.payment_method_id.name=='Card':
                        paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
-                        'branch':pos.session_id.config_id.branch,
+      'branch':pos.company_id.branch,
+                       # 'siteID':pos.company_id.siteID,
                         'docType': 3,
                         'paymentType':paymentType,
                         #'docId':pos.pos_reference,

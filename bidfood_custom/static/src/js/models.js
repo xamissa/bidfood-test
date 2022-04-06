@@ -8,7 +8,7 @@ odoo.define("bidfood_custom.models", function (require) {
   models.load_fields('res.partner', ['street', 'street2', 'city', 'zip']);
   models.load_fields('pos.order', ['refunded_orders_count']);
   models.load_fields('product.template', ['branch']);
-  models.load_fields('pos.config', ['branch']);
+  //models.load_fields('pos.config', ['branch']);
 
 
 var existing_models = models.PosModel.prototype.models;
@@ -21,7 +21,7 @@ models.load_models([{
   model:  product_model.model,
   fields: product_model.fields,
   order:  product_model.order,
-  domain: function(self) {return [['branch', '=', self.config.branch]];},
+  domain: function(self) {return [['branch', '=', self.config.company_id.branch]];},
   loaded: product_model.loaded,
 }]);
 

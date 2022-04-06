@@ -36,7 +36,7 @@ models.PosModel = models.PosModel.extend({
                 return rpc.query({
                     model: 'product.product',
                     method: 'search_read',
-                    domain: [["branch", "=", self.config.branch]],
+                    domain: [["branch", "=", self.config.company_id.branch]],
                 }).then(function (products) {
                     self.db.add_products(_.map(products, function (product) {
                         product.categ = _.findWhere(self.product_categories, {'id': product.categ_id[0]});
