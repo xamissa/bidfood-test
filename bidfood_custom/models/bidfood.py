@@ -323,15 +323,23 @@ class bidfood_sale(models.Model):
             paymentType=''
             if pos.refunded_order_ids:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
-                if payment_id.payment_method_id.name=='Cash':
-                   paymentType='4'
-                if payment_id.payment_method_id.name=='Card':
-                   paymentType='6'
+                paymentLines=[]
+                for i in payment_id:
+                    if i.payment_method_id.name=='Cash Payment':
+                       paymentType=4
+                    if i.payment_method_id.name=='Credit Card Payment':
+                       paymentType=6
+                    if i.payment_method_id.name=='Check Payment':
+                       paymentType=5
+                    if paymentType:
+                       payment={ "paymentType":  paymentType,
+                                "paymentAmount": i.amount}
+                       paymentLines.append(payment)
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':pos.company_id.branch,
                         'siteID':pos.company_id.siteid,
                         'docType': 4,
-                        'paymentType':paymentType,
+                        'paymentType':paymentLines,
                        # 'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
@@ -355,16 +363,23 @@ class bidfood_sale(models.Model):
                 data['invoiceLines']=order_line
             else:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','!=','return'),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
+                paymentLines=[]
                 for i in payment_id:
-                    if i.payment_method_id.name=='Cash':
-                       paymentType='4'
-                    if i.payment_method_id.name=='Card':
-                       paymentType='6'
+                    if i.payment_method_id.name=='Cash Payment':
+                       paymentType=4
+                    if i.payment_method_id.name=='Credit Card Payment':
+                       paymentType=6
+                    if i.payment_method_id.name=='Check Payment':
+                       paymentType=5
+                    if paymentType:
+                       payment={ "paymentType":  paymentType,
+                                "paymentAmount": i.amount}
+                       paymentLines.append(payment)
                 data = {'posSalesOrderNr': pos.pos_reference,
       'branch':pos.company_id.branch,
                         'siteID':pos.company_id.siteid,
                         'docType': 3,
-                        'paymentType':paymentType,
+                        'paymentType':paymentLines,
                         #'docId':pos.pos_reference,
                         'SOPNUMBE':pos.name,
                         'TAXSCHID':'OUTPUTVAT - 15%',
