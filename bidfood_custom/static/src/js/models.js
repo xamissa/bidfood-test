@@ -11,7 +11,7 @@ odoo.define("bidfood_custom.models", function (require) {
   //models.load_fields('pos.config', ['branch']);
 
 
-var existing_models = models.PosModel.prototype.models;
+/*var existing_models = models.PosModel.prototype.models;
 var product_index = _.findIndex(existing_models, function (model) {
     return model.model === "product.product";
 });
@@ -26,7 +26,7 @@ models.load_models([{
 }]);
 
 models.load_fields("product.product", ["branch"]);
-
+*/
 
 
   var _super_order = models.Order.prototype;
@@ -53,14 +53,11 @@ models.load_fields("product.product", ["branch"]);
         json.company.zip = this.zip;
         /*json.client.address=this.client.address*/
         json.is_refund = this.refund_fun();
-        console.log("###############3",json)
         return json;
     },
 
     refund_fun: function () {
         var self = this;
-        
-        console.log(this.is_refund+"::::refund_fun>>>>>>>>>>>>>"+Object.keys(self));
         return false;
     },
     
