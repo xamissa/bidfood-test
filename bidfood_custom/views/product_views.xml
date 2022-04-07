@@ -23,17 +23,17 @@
     </record-->
     
     
-      <!--record id="res_company_form_bidfood" model="ir.ui.view">
+      <record id="res_company_form_bidfood" model="ir.ui.view">
             <field name="name">res.company.form.inherit.bidfood</field>
             <field name="model">res.company</field>
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="branch"/>
-                    <field name="siteID"/>
+                    <field name="siteid"/>
                 </xpath>
             </field>
-        </record-->
+        </record>
 
     <record model="ir.ui.view" id="pos_order_bidfoodstock_form_view">
         <field name="name">pos.order.bidfood</field>

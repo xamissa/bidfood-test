@@ -162,7 +162,7 @@ class bidfood_sale(models.Model):
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
             company_id = company_obj.search([('branch', '=',
-                    r['branch'])])
+                    r['branch']),('siteid','=',r['siteID'])])
             if categ_id:
                 categ_id = categ_id.id
             else:
@@ -320,7 +320,7 @@ class bidfood_sale(models.Model):
                    paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':pos.company_id.branch,
-                       # 'siteID':pos.company_id.siteID,
+                        'siteID':pos.company_id.siteid,
                         'docType': 4,
                         'paymentType':paymentType,
                        # 'docId':pos.pos_reference,
@@ -353,7 +353,7 @@ class bidfood_sale(models.Model):
                        paymentType='6'
                 data = {'posSalesOrderNr': pos.pos_reference,
       'branch':pos.company_id.branch,
-                       # 'siteID':pos.company_id.siteID,
+                        'siteID':pos.company_id.siteid,
                         'docType': 3,
                         'paymentType':paymentType,
                         #'docId':pos.pos_reference,
