@@ -290,6 +290,10 @@ class bidfood_sale(models.Model):
                uom_id=uom_obj.search([('name','=',r['unit_of_measure'])],limit=1)
                if uom_id:
                   val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
+            if r['customer_taxes'] == 'ZEROVAT SALES':
+                val.update({'taxes_id':[(6,0,[])]})
+            if r['customer_taxes'] == 'OUTPUTVAT - 15%':
+                val.update({'taxes_id':[(6,0,[1])]})
 
             try:
                 if val:
