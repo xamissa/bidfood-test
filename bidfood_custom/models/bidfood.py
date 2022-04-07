@@ -279,8 +279,8 @@ class bidfood_sale(models.Model):
             if product.branch != r['branch']:
                 val.update({'branch': r['branch']})
 
-            if product.siteid != r['siteid']:
-                val.update({'siteid': r['siteid']})
+            if product.siteid != r['siteID']:
+                val.update({'siteid': r['siteID']})
             if r['blocked'] == 0:
                 val.update({'available_in_pos': True})
             if r['blocked'] == 1:
