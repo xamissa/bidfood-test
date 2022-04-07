@@ -326,11 +326,11 @@ class bidfood_sale(models.Model):
                 paymentLines=[]
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
-                       paymentType=4
+                       paymentType="4"
                     if i.payment_method_id.name=='Credit Card Payment':
-                       paymentType=6
-                    if i.payment_method_id.name=='Check Payment':
-                       paymentType=5
+                       paymentType="6"
+                    """if i.payment_method_id.name=='Check Payment':
+                       paymentType=5"""
                     if paymentType:
                        payment={ "paymentType":  paymentType,
                                 "paymentAmount": i.amount}
@@ -366,11 +366,11 @@ class bidfood_sale(models.Model):
                 paymentLines=[]
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
-                       paymentType=4
+                       paymentType="4"
                     if i.payment_method_id.name=='Credit Card Payment':
-                       paymentType=6
-                    if i.payment_method_id.name=='Check Payment':
-                       paymentType=5
+                       paymentType="6"
+                    """if i.payment_method_id.name=='Check Payment':
+                       paymentType=5"""
                     if paymentType:
                        payment={ "paymentType":  paymentType,
                                 "paymentAmount": i.amount}
