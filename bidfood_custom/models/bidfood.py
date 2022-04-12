@@ -324,17 +324,29 @@ class bidfood_sale(models.Model):
             if pos.refunded_order_ids:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
                 paymentLines=[]
+                amount=0.0
+                paymentTypecash=''
+                cash=0.0
+                paymentTypecard=''
+                card=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
-                       paymentType="4"
+                       print("===============",i.payment_method_id.name)
+                       cash=i.amount+cash
+                       paymentTypecash="4"
                     if i.payment_method_id.name=='Credit Card Payment':
-                       paymentType="6"
-                    """if i.payment_method_id.name=='Check Payment':
-                       paymentType=5"""
-                    if paymentType:
-                       payment={ "paymentType":  paymentType,
-                                "paymentAmount": i.amount}
-                       paymentLines.append(payment)
+                       card=i.amount+card
+                       paymentTypecard="6"
+                    
+                
+                if paymentTypecash:
+                       payment={ "paymentType":  paymentTypecash,
+                                "paymentAmount": cash}
+                       paymentLines.append(   payment)
+                if paymentTypecard:
+                       payment={ "paymentType":  paymentTypecard,
+                                "paymentAmount": card}
+                       paymentLines.append(   payment)
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':pos.company_id.branch,
                         'siteID':pos.company_id.siteid,
@@ -362,19 +374,30 @@ class bidfood_sale(models.Model):
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
             else:
-                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('name','!=','return'),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
+                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
                 paymentLines=[]
+                amount=0.0
+                paymentTypecash=''
+                cash=0.0
+                paymentTypecard=''
+                card=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
-                       paymentType="4"
+                       cash=i.amount+cash
+                       paymentTypecash="4"
                     if i.payment_method_id.name=='Credit Card Payment':
-                       paymentType="6"
-                    """if i.payment_method_id.name=='Check Payment':
-                       paymentType=5"""
-                    if paymentType:
-                       payment={ "paymentType":  paymentType,
-                                "paymentAmount": i.amount}
-                       paymentLines.append(payment)
+                       card=i.amount+card
+                       paymentTypecard="6"
+                    
+                
+                if paymentTypecash:
+                       payment={ "paymentType":  paymentTypecash,
+                                "paymentAmount": cash}
+                       paymentLines.append(   payment)
+                if paymentTypecard:
+                       payment={ "paymentType":  paymentTypecard,
+                                "paymentAmount": card}
+                       paymentLines.append(   payment)            
                 data = {'posSalesOrderNr': pos.pos_reference,
       'branch':pos.company_id.branch,
                         'siteID':pos.company_id.siteid,
@@ -407,7 +430,6 @@ class bidfood_sale(models.Model):
         product_big = self.env['product.big'].create({'name': 'Test'})
         url = 'https://pos.bidfood.co.za/api/Invoice'
         self.bidfood_token()
-        print(self)
         headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'
 }
 
