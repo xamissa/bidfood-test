@@ -122,6 +122,7 @@ class bidfood_sale(models.Model):
                                 data=payload)
         if resp.status_code == 200:
             res = resp.json()
+            print(res)
             create_product = []
             update_product = []
             for r in res:
