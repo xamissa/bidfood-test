@@ -122,13 +122,12 @@ class bidfood_sale(models.Model):
                                 data=payload)
         if resp.status_code == 200:
             res = resp.json()
-            print(res)
             create_product = []
             update_product = []
             for r in res:
                 product = self.env['product.template'
                                    ].search([('default_code', '=',
-                        r['internal_Reference'].strip())],
+                        r['internal_Reference'].strip()),('siteid','=',r['siteID'])],
                         order='id desc', limit=1)
                 if not product:
                     create_product.append(r)
@@ -163,7 +162,7 @@ class bidfood_sale(models.Model):
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
             company_id = company_obj.search([('branch', '=',
-                    r['branch']),('siteid','=',r['siteID'])])
+                    r['branch'])])
             if categ_id:
                 categ_id = categ_id.id
             else:
@@ -195,7 +194,6 @@ class bidfood_sale(models.Model):
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
                 val.update({'taxes_id':[(6,0,[1])]})
-            print("r['blocked']---------------",type(r['blocked']))
             if r['blocked'] == 0:
                 val.update({'available_in_pos': True})
             if r['blocked'] == 1:
@@ -206,7 +204,7 @@ class bidfood_sale(models.Model):
                   val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
 
             try:
-                p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
+                p_id = product.search([('default_code','=',r['internal_Reference'].strip()),('siteid','=',r['siteID'])])
                 if p_id and not p_id.barcode and barcode:
                     p_id.barcode = barcode
                 if not p_id:
@@ -237,7 +235,6 @@ class bidfood_sale(models.Model):
         product_big = self.env['product.big'].create({'name': 'Test'})
         for r in create_product:
             val = {}
-            print(r)
             barcode = ''
             temp = ''
             product = self.env['product.template'].browse(r['product_id'
@@ -320,7 +317,6 @@ class bidfood_sale(models.Model):
             data={}
             pos_pay = self.env['pos.payment']
             payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
-            print(payment_id)
             paymentType=''
             if pos.refunded_order_ids:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
@@ -332,7 +328,6 @@ class bidfood_sale(models.Model):
                 card=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
-                       print("===============",i.payment_method_id.name)
                        cash=i.amount+cash
                        paymentTypecash="4"
                     if i.payment_method_id.name=='Credit Card Payment':
