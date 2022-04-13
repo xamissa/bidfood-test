@@ -58,7 +58,7 @@
                 </div>
                 <center><div>--------------------------------</div></center><br/>
                 <div class="pos-receipt-contact">
-                    <span><strong>Date: </strong><t t-esc="receipt.date.localestring" /></span>
+                    <span><strong>Date: </strong><t t-esc="receipt.odate" /></span>
                 </div>
             </t>
         </xpath>

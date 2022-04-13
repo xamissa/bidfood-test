@@ -31,13 +31,14 @@ models.PosModel = models.PosModel.extend({
                 if (limit_products_per_request){
                     domain = domain.slice();
                     domain.unshift('&');
-                    domain.push(['branch', '=', self.config.branch]);
+                    domain.push(['branch', '=', self.config.branch],['siteid','=',self.config.name]);
                 }
                 return rpc.query({
                     model: 'product.product',
                     method: 'search_read',
-                    domain: [["branch", "=", self.config.company_id.branch]],
+                    domain: [["branch", "=", self.config.branch],['siteid','=',self.config.name]],
                 }).then(function (products) {
+                    console.log("!!!!!!!!!!",products);
                     self.db.add_products(_.map(products, function (product) {
                         product.categ = _.findWhere(self.product_categories, {'id': product.categ_id[0]});
                         product.pos = self;

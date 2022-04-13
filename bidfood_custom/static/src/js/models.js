@@ -4,14 +4,14 @@ odoo.define("bidfood_custom.models", function (require) {
   const models = require("point_of_sale.models");
   
   var exports = {};
-  models.load_fields('res.company', ['street', 'street2', 'city', 'zip']);
+  models.load_fields('res.company', ['street', 'street2', 'city', 'zip','branch']);
   models.load_fields('res.partner', ['street', 'street2', 'city', 'zip']);
   models.load_fields('pos.order', ['refunded_orders_count']);
   models.load_fields('product.template', ['branch']);
-  //models.load_fields('pos.config', ['branch']);
+  models.load_fields('pos.config', ['branch']);
 
 
-/*var existing_models = models.PosModel.prototype.models;
+var existing_models = models.PosModel.prototype.models;
 var product_index = _.findIndex(existing_models, function (model) {
     return model.model === "product.product";
 });
@@ -21,12 +21,12 @@ models.load_models([{
   model:  product_model.model,
   fields: product_model.fields,
   order:  product_model.order,
-  domain: function(self) {return [['branch', '=', self.config.company_id.branch]];},
+  domain: function(self) {return [['branch', '=', self.config.branch],['siteid','=',self.config.name]];},
   loaded: product_model.loaded,
 }]);
 
-models.load_fields("product.product", ["branch"]);
-*/
+models.load_fields("product.product", ["branch","siteid"]);
+
 
 
   var _super_order = models.Order.prototype;
@@ -55,6 +55,7 @@ models.load_fields("product.product", ["branch"]);
         /*json.client.address=this.client.address*/
         json.is_refund = this.refund_fun();
         json.oname=this.order_name();
+        json.odate=this.order_date();
         return json;
     },
 
@@ -64,9 +65,19 @@ models.load_fields("product.product", ["branch"]);
     },
     order_name: function () {
         var oname = this.get_name();
-        console.log("!!!!!!!!!!!!!!!!!1",oname);
         let result = oname.replace("Order", "Invoice");
         return result;
+    },
+    day_of_the_month:function(d)
+    { 
+      var d = new Date();
+      return ((d.getMonth()+1) < 10 ? '0' : '') + (d.getMonth()+1);
+    },
+    order_date: function () {
+        var today = new Date();
+        var date = today.getFullYear()+'-'+this.day_of_the_month()+'-'+today.getDate()+'-'+today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();;
+
+        return date;
     },
     
   });
