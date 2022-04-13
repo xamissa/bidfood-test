@@ -84,7 +84,8 @@
                 <div style="font-size:85%;">Subtotal<span t-esc="env.pos.format_currency(receipt.subtotal)" class="pos-receipt-right-align"/></div>
                 <t t-foreach="receipt.tax_details" t-as="tax" t-key="tax.name">
                     <div class="responsive-price" style="font-size:85%;">
-                        <t t-esc="tax.name" />
+                        <!-- <t t-esc="tax.name" /> -->
+                        <span>VAT @ 15%</span>
                         <span t-esc='env.pos.format_currency_no_symbol(tax.amount)' class="pos-receipt-right-align"/>
                     </div>
                 </t>
@@ -93,7 +94,7 @@
 
         <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="replace">
             <div class="pos-receipt-order-data">
-                <div><t t-esc="receipt.name" /></div>                
+                <div><t t-esc="receipt.oname" /></div>
                 <t t-if="receipt.cashier">
                     <div class="cashier">
                         <div>--------------------------------</div>

@@ -40,6 +40,7 @@ models.load_fields("product.product", ["branch"]);
         this.city = this.pos.company.city || "";
         this.zip = this.pos.company.zip || "";
         this.is_refund = false;
+
         
     },
 
@@ -53,12 +54,19 @@ models.load_fields("product.product", ["branch"]);
         json.company.zip = this.zip;
         /*json.client.address=this.client.address*/
         json.is_refund = this.refund_fun();
+        json.oname=this.order_name();
         return json;
     },
 
     refund_fun: function () {
         var self = this;
         return false;
+    },
+    order_name: function () {
+        var oname = this.get_name();
+        console.log("!!!!!!!!!!!!!!!!!1",oname);
+        let result = oname.replace("Order", "Invoice");
+        return result;
     },
     
   });
