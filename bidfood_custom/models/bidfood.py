@@ -349,7 +349,7 @@ class bidfood_sale(models.Model):
                        paymentLines.append(   payment)
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':pos.company_id.branch,
-                        'siteID':pos.company_id.siteid,
+                        'siteID':pos.session_id.name,
                         'docType': 4,
                         'paymentLines':paymentLines,
                        # 'docId':pos.pos_reference,
@@ -400,7 +400,7 @@ class bidfood_sale(models.Model):
                        paymentLines.append(   payment)            
                 data = {'posSalesOrderNr': pos.pos_reference,
       'branch':pos.company_id.branch,
-                        'siteID':pos.company_id.siteid,
+                        'siteID':pos.session_id.name,
                         'docType': 3,
                         'paymentLines':paymentLines,
                         #'docId':pos.pos_reference,
