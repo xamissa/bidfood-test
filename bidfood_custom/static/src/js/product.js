@@ -25,8 +25,7 @@ models.PosModel = models.PosModel.extend({
           var product_fields =  typeof self.product_model.fields === 'function'  ? self.product_model.fields(self)  : self.product_model.fields;
           var product_domain =  typeof self.product_model.domain === 'function'  ? self.product_model.domain(self)  : self.product_model.domain;
             var limit_products_per_request = self.config.limit_products_per_request;
-            var cur_request = 0;
-            function next(resolve, reject){
+            var cur_request = 0;            
                 var domain = product_domain;
                 if (limit_products_per_request){
                     domain = domain.slice();
@@ -44,8 +43,7 @@ models.PosModel = models.PosModel.extend({
                         product.pos = self;
                         return new models.Product({}, product);
                     }));
-                });
-            }
+                });           
             }).then(() => {
             self.models.push(self.product_model);
         });
