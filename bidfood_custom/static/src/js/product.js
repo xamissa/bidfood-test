@@ -6,6 +6,7 @@ var core = require('web.core');
 var rpc = require('web.rpc');
 var _t = core._t;
 
+
 var posmodel_super = models.PosModel.prototype;
 models.PosModel = models.PosModel.extend({
     load_server_data: function () {
