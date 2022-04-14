@@ -127,7 +127,7 @@ class bidfood_sale(models.Model):
             for r in res:
                 product = self.env['product.template'
                                    ].search([('default_code', '=',
-                        r['internal_Reference'].strip())],
+                        r['internal_Reference'].strip()),('siteid','=',r['siteID'])],
                         order='id desc', limit=1)
                 if not product:
                     create_product.append(r)
@@ -205,7 +205,7 @@ class bidfood_sale(models.Model):
                   val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
 
             try:
-                p_id = product.search([('default_code','=',r['internal_Reference'].strip())])
+                p_id = product.search([('default_code','=',r['internal_Reference'].strip()),('siteid','=',r['siteID'])])
                 if p_id and not p_id.barcode and barcode:
                     p_id.barcode = barcode
                 if not p_id:
