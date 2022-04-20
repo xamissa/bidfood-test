@@ -56,11 +56,11 @@
                         <div>VAT :<t t-esc="receipt.client.vat" /></div>
                     </t>
                 </div>
-                <center><div>--------------------------------</div></center><br/>
+            </t>
+            <center><div>--------------------------------</div></center><br/>
                 <div class="pos-receipt-contact">
                     <span><strong>Date: </strong><t t-esc="receipt.odate" /></span>
                 </div>
-            </t>
         </xpath>
 
         <xpath expr="//t[@t-foreach='receipt.paymentlines']" position="replace">
