@@ -65,7 +65,7 @@ models.load_fields("product.product", ["branch","siteid"]);
     },
     order_name: function () {
         var oname = this.get_name();
-        let result = oname.replace("Order", "Invoice");
+        let result = oname.replace("Order", "Inv No:");
         return result;
     },
     day_of_the_month:function(d)

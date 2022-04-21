@@ -37,7 +37,7 @@
 
         <xpath expr="//t[@t-if='receipt.company.vat']" position="replace">
             <t t-if="receipt.company.vat">
-                <div>VAT :<t t-esc="receipt.company.vat" /></div>
+                <div>VAT No :<t t-esc="receipt.company.vat" /></div>
             </t>
         </xpath>
 
@@ -53,7 +53,7 @@
                         <div><t t-esc="receipt.client.address" /></div>
                     </t>
                     <t t-if="receipt.client.vat">
-                        <div>VAT :<t t-esc="receipt.client.vat" /></div>
+                        <div>VAT No :<t t-esc="receipt.client.vat" /></div>
                     </t>
                 </div>
             </t>
