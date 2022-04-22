@@ -128,9 +128,9 @@
              <table style="width:100%;" class="responsive-price">
                 <tbody>
                     <tr style="border-bottom: 1px solid black;border-top: 1px solid black;font-size:85%;">
-                        <td style="width:27%;"><strong>Internal Ref.</strong></td>
-                        <td style="width:50%;text-align:center;"><strong>Product</strong></td>
-                        <td style="text-align:left;width:3%;"><strong>Qty</strong></td>
+                        <!-- <td style="width:27%;"><strong>Internal Ref.</strong></td> -->
+                        <td style="width:70%;text-align:center;"><strong>Product</strong></td>
+                        <td style="text-align:left;width:10%;"><strong>Qty</strong></td>
 
                        <!--  <td><strong>UOM</strong></td> -->
                         <td style="text-align:right;width:19%;"><strong>Price</strong></td>
@@ -139,9 +139,9 @@
                     <t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
                         <t t-if="isSimple(line)">
                                 <tr style="border-bottom: 1px solid black;font-size:75%;">
-                                    <td style="width:27%;"><t t-esc="line.default_code"/></td>
-                                    <td style="width:50%;"><t t-esc="line.product_name"/></td>
-                                    <td style="text-align:center;width:3%"><t t-esc="line.quantity"/></td>
+                                   <!--  <td style="width:27%;"><t t-esc="line.default_code"/></td> -->
+                                    <td style="width:70%;"><t t-esc="line.product_name"/></td>
+                                    <td style="text-align:center;width:10%"><t t-esc="line.quantity"/></td>
                                     <!-- <td><t t-esc="line.unit_name"/></td> -->
                                     <td style="text-align:right;width:19%;"><t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/></td>
                                     <t t-if="line.price_without_tax == line.price_with_tax">
