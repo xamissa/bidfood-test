@@ -86,7 +86,13 @@ models.load_fields("product.product", ["branch","siteid"]);
   models.Orderline = models.Orderline.extend({
       export_for_printing: function() {
           var line = _super_orderline.export_for_printing.apply(this,arguments);
+          if (line.quantity)
+          {
+            var qty=line.quantity;
+            line.quantity=qty.toFixed(2);
+          }
           line.default_code = this.get_product().default_code;
+
           return line;
       },
   });
