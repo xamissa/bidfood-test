@@ -48,7 +48,7 @@
         </field>
     </record>
 
-    <!--record model="ir.ui.view" id="pos_config_branch_view">
+    <record model="ir.ui.view" id="pos_config_branch_view">
         <field name="name">pos.config.branch.view</field>
         <field name="model">pos.config</field>
         <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
@@ -56,12 +56,12 @@
             <xpath expr="//div[@id='title']" position="after">
                 <div class="oe_title" id="branch">
                     <label for="branch"/>
-                    <field name='branch' placeholder="Branch Name"/>
+                    <field name='branch'/>
                 </div>
             </xpath>
 
         </field>
-    </record-->
+    </record>
 
     <!-- <record model="ir.ui.view" id="pos_session_branch_view">
         <field name="name">pos.session.branch.view</field>
