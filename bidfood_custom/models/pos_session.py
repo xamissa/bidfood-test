@@ -17,7 +17,7 @@ _logger = logging.getLogger(__name__)
 class pos_config(models.Model):
     _inherit = "pos.config"
 
-    branch=fields.Char(string="Branch",related='company_id.branch')
+    branch=fields.Char(string="SiteID")
 
 class pos_session(models.Model):
     _inherit = "pos.session"

@@ -31,7 +31,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="branch"/>
-                    <field name="siteid"/>
+                    <!-- <field name="siteid"/> -->
                 </xpath>
             </field>
         </record>
