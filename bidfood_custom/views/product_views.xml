@@ -58,6 +58,10 @@
                     <label for="branch"/>
                     <field name='branch'/>
                 </div>
+                <div class="oe_title" id="site_id">
+                    <label for="site_id"/>
+                    <field name='site_id'/>
+                </div>
             </xpath>
 
         </field>

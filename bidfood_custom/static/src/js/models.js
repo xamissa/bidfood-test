@@ -21,7 +21,7 @@ models.load_models([{
   model:  product_model.model,
   fields: product_model.fields,
   order:  product_model.order,
-  domain: function(self) {return [['branch', '=', self.config.branch],['siteid','=',self.config.name]];},
+  domain: function(self) {return [['branch', '=', self.config.branch],['siteid','=',self.config.site_id]];},
   loaded: product_model.loaded,
 }]);
 

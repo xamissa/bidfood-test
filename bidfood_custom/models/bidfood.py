@@ -23,7 +23,7 @@ _logger = logging.getLogger(__name__)
 
 class res_company(models.Model):
     _inherit = 'res.company'
-    branch = fields.Char(string="SiteID")
+    branch = fields.Char(string="Branch")
     siteid = fields.Char(string="SiteID")
 
 class Productemplate(models.Model):
@@ -40,6 +40,7 @@ class ProductProduct(models.Model):
 
     branch = fields.Char(string="Branch", related="product_tmpl_id.branch")
     siteid = fields.Char(string="SiteID", related="product_tmpl_id.siteid")
+    _sql_constraints = [('barcode_uniq', 'check(1=1)', 'No error'),]
 
 class PosOrder(models.Model):
 
@@ -349,7 +350,7 @@ class bidfood_sale(models.Model):
                        paymentLines.append(   payment)
                 data = {'posSalesOrderNr': pos.pos_reference,
                         'branch':pos.company_id.branch,
-                        'siteID':pos.session_id.config_id.branch,
+                        'siteID':pos.session_id.config_id.site_id,
                         'docType': 4,
                         'paymentLines':paymentLines,
                        # 'docId':pos.pos_reference,
@@ -400,7 +401,7 @@ class bidfood_sale(models.Model):
                        paymentLines.append(   payment)            
                 data = {'posSalesOrderNr': pos.pos_reference,
       'branch':pos.company_id.branch,
-                        'siteID':pos.session_id.config_id.branch,
+                        'siteID':pos.session_id.config_id.site_id,
                         'docType': 3,
                         'paymentLines':paymentLines,
                         #'docId':pos.pos_reference,
