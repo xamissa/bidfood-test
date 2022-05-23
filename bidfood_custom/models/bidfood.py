@@ -170,8 +170,15 @@ class bidfood_sale(models.Model):
                 categ_id = \
                     product_categ_obj.create({'name': r['product_category'
                         ]}).id
+
+            tax = False
             if company_id:
                company_id = company_id.id
+            if company_id.id == 1:
+                tax=1
+            elif company_id.id == 2:
+                tax=17
+
             val = {
                 'name': r['product_name'],
                 'active': True,
@@ -194,7 +201,7 @@ class bidfood_sale(models.Model):
             if r['customer_taxes'] == 'ZEROVAT SALES':
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
-                val.update({'taxes_id':[(6,0,[1])]})
+                val.update({'taxes_id':[(6,0,[tax])]})
             print("r['blocked']---------------",type(r['blocked']))
             if r['blocked'] == 0:
                 val.update({'available_in_pos': True})
@@ -252,6 +259,9 @@ class bidfood_sale(models.Model):
                 val.update({'barcode': barcode})
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
+            company_id = company_obj.search([('branch', '=',
+                    r['branch']),('siteid','=',r['siteID'])])
+
             if categ_id:
                 categ_id = categ_id.id
             else:
@@ -260,6 +270,13 @@ class bidfood_sale(models.Model):
                         ]}).id
 
             # val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
+            tax = False
+            if company_id:
+               company_id = company_id.id
+            if company_id.id == 1:
+                tax=1
+            elif company_id.id == 2:
+                tax=17
 
             if product.name != r['product_name']:
                 val.update({'name': r['product_name']})
@@ -290,7 +307,7 @@ class bidfood_sale(models.Model):
             if r['customer_taxes'] == 'ZEROVAT SALES':
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
-                val.update({'taxes_id':[(6,0,[1])]})
+                val.update({'taxes_id':[(6,0,[tax])]})
 
             try:
                 if val:
