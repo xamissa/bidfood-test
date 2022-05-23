@@ -174,9 +174,9 @@ class bidfood_sale(models.Model):
             tax = 1
             if company_id:
                company_id = company_id.id
-            if company_id.id == 1:
+            if company_id == 1:
                 tax=1
-            elif company_id.id == 2:
+            elif company_id == 2:
                 tax=17
 
             val = {
@@ -274,9 +274,9 @@ class bidfood_sale(models.Model):
             tax = 1
             if company_id:
                company_id = company_id.id
-            if company_id.id == 1:
+            if company_id == 1:
                 tax=1
-            elif company_id.id == 2:
+            elif company_id == 2:
                 tax=17
 
             if product.name != r['product_name']:
