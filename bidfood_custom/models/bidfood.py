@@ -242,6 +242,7 @@ class bidfood_sale(models.Model):
         product_log = self.env['product.big.log']
         product_categ_obj = self.env['pos.category']
         product_big = self.env['product.big'].create({'name': 'Test'})
+        company_obj = self.env['res.company']
         for r in create_product:
             val = {}
             print(r)
