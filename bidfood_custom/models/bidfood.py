@@ -163,7 +163,7 @@ class bidfood_sale(models.Model):
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
             company_id = company_obj.search([('branch', '=',
-                    r['branch']),('siteid','=',r['siteID'])])
+                    r['branch'])])
             if categ_id:
                 categ_id = categ_id.id
             else:
@@ -261,7 +261,7 @@ class bidfood_sale(models.Model):
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
             company_id = company_obj.search([('branch', '=',
-                    r['branch']),('siteid','=',r['siteID'])])
+                    r['branch'])])
 
             if categ_id:
                 categ_id = categ_id.id
