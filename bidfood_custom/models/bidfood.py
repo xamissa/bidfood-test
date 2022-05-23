@@ -171,7 +171,7 @@ class bidfood_sale(models.Model):
                     product_categ_obj.create({'name': r['product_category'
                         ]}).id
 
-            tax = False
+            tax = 1
             if company_id:
                company_id = company_id.id
             if company_id.id == 1:
@@ -271,7 +271,7 @@ class bidfood_sale(models.Model):
                         ]}).id
 
             # val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
-            tax = False
+            tax = 1
             if company_id:
                company_id = company_id.id
             if company_id.id == 1:
