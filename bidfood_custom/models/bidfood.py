@@ -175,7 +175,7 @@ class bidfood_sale(models.Model):
             if company_id:
                company_id = company_id.id
 
-            tax_id = self.env['account.tax'].search([('company_id', '=', company_id),('type_tax_use', '=', 'sale'),('name', '=', 'Standard Rate')],limit=1)
+            tax_id = self.env['account.tax'].search([('company_id', '=', company_id),('type_tax_use', '=', 'Sales'),('name', '=', 'Standard Rate')],limit=1)
 
             val = {
                 'name': r['product_name'],
@@ -271,7 +271,7 @@ class bidfood_sale(models.Model):
             # val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
             if company_id:
                val.update({'company_id' : company_id.id})
-            tax_id = self.env['account.tax'].search([('company_id', '=', company_id.id),('type_tax_use', '=', 'sale'),('name', '=', 'Standard Rate')],limit=1)
+            tax_id = self.env['account.tax'].search([('company_id', '=', company_id.id),('type_tax_use', '=', 'Sales'),('name', '=', 'Standard Rate')],limit=1)
 
             if product.name != r['product_name']:
                 val.update({'name': r['product_name']})
