@@ -128,7 +128,7 @@ class bidfood_sale(models.Model):
             for r in res:
                 product = self.env['product.template'
                                    ].search([('default_code', '=',
-                        r['internal_Reference'].strip()),('siteid','=',r['siteID'])],
+                        r['internal_Reference'].strip())],
                         order='id desc', limit=1)
                 if not product:
                     create_product.append(r)
