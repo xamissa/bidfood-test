@@ -162,8 +162,9 @@ class bidfood_sale(models.Model):
                 to_weight = True
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
-            company_id = company_obj.search([('branch', '=',
+            company_id = company_obj.sudo().search([('branch', '=',
                     r['branch'])])
+
             if categ_id:
                 categ_id = categ_id.id
             else:
@@ -171,13 +172,10 @@ class bidfood_sale(models.Model):
                     product_categ_obj.create({'name': r['product_category'
                         ]}).id
 
-            tax = 1
             if company_id:
                company_id = company_id.id
-            if company_id == 1:
-                tax=1
-            elif company_id == 2:
-                tax=17
+
+            tax_id = self.env['account.tax'].search([('company_id', '=', company_id),('type_tax_use', '=', 'sale'),('name', '=', 'Standard Rate')],limit=1)
 
             val = {
                 'name': r['product_name'],
@@ -201,7 +199,7 @@ class bidfood_sale(models.Model):
             if r['customer_taxes'] == 'ZEROVAT SALES':
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
-                val.update({'taxes_id':[(6,0,[tax])]})
+                val.update({'taxes_id':[(6,0,[tax_id.id])]})
             print("r['blocked']---------------",type(r['blocked']))
             if r['blocked'] == 0:
                 val.update({'available_in_pos': True})
@@ -217,7 +215,7 @@ class bidfood_sale(models.Model):
                 if p_id and not p_id.barcode and barcode:
                     p_id.barcode = barcode
                 if not p_id:
-                    product.create(val)
+                    product.sudo().create(val)
                     log_book_id = product_log.create({
                         'name': r['product_name'],
                         'product_big': product_big.id,
@@ -260,7 +258,7 @@ class bidfood_sale(models.Model):
                 val.update({'barcode': barcode})
             categ_id = product_categ_obj.search([('name', '=',
                     r['product_category'])])
-            company_id = company_obj.search([('branch', '=',
+            company_id = company_obj.sudo().search([('branch', '=',
                     r['branch'])])
 
             if categ_id:
@@ -271,13 +269,9 @@ class bidfood_sale(models.Model):
                         ]}).id
 
             # val={'name':r['product_name'] ,'active': True, 'default_code': r['internal_Reference'], 'list_price': r['cost'], 'gp_unit': r['unit_of_measure'],'type':'product','to_weight':to_weight,'detailed_type':'product','available_in_pos':True,'pos_categ_id':categ_id}
-            tax = 1
             if company_id:
-               company_id = company_id.id
-            if company_id == 1:
-                tax=1
-            elif company_id == 2:
-                tax=17
+               val.update({'company_id' : company_id.id})
+            tax_id = self.env['account.tax'].search([('company_id', '=', company_id.id),('type_tax_use', '=', 'sale'),('name', '=', 'Standard Rate')],limit=1)
 
             if product.name != r['product_name']:
                 val.update({'name': r['product_name']})
@@ -308,11 +302,11 @@ class bidfood_sale(models.Model):
             if r['customer_taxes'] == 'ZEROVAT SALES':
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
-                val.update({'taxes_id':[(6,0,[tax])]})
+                val.update({'taxes_id':[(6,0,[tax_id.id])]})
 
             try:
                 if val:
-                    product.write(val)
+                    product.sudo().write(val)
                     log_book_id = product_log.create({
                         'name': product.name,
                         'product_big': product_big.id,
