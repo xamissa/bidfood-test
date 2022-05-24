@@ -127,8 +127,8 @@ class bidfood_sale(models.Model):
             update_product = []
             for r in res:
                 product = self.env['product.template'
-                                   ].search([('default_code', '=',
-                        r['internal_Reference'].strip())],
+                                   ].sudo().search([('default_code', '=',
+                        r['internal_Reference'].strip(),('siteid','=',r['siteID']),('branch','=',r['branch']))],
                         order='id desc', limit=1)
                 if not product:
                     create_product.append(r)
@@ -179,7 +179,7 @@ class bidfood_sale(models.Model):
             elif company_id == 2:
                 tax=17
 
-            #tax_id = self.env['account.tax'].search([('company_id', '=', company_id),('type_tax_use', '=', 'Sales'),('name', '=', 'Standard Rate')],limit=1)
+            #tax_id = self.env['account.tax'].search([('company_id', '=', company_id),('type_tax_use', '=', 'sale'),('name', '=', 'Standard Rate')],limit=1)
 
             val = {
                 'name': r['product_name'],
