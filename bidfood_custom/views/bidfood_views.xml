@@ -78,7 +78,7 @@
       </record>
 
       <record id="product_big_log_action" model="ir.actions.act_window">
-         <field name="name">BidFood Product Log</field>
+         <field name="name">BidFood Log</field>
          <field name="res_model">product.big.log</field>
          <field name="view_mode">tree,form</field>
          <field name="view_id" ref="product_big_log_tree" />
