@@ -55,6 +55,7 @@
                   <group>
                      <field name="name"/>
                      <field name="payload"/>
+                     <field name="model"/>
                      <field name="error"/>
                      <field name="ttype"/>
                      <field name="etype"/>
@@ -72,6 +73,7 @@
             <tree>
                <field name="name" />
                <field name="payload"/>
+               <field name="model"/>
                <field name="error"/>
             </tree>
          </field>
@@ -99,6 +101,7 @@
                            <tree>
                               <field name="name"/>
                               <field name="payload"/>
+                              <field name="model"/>
                               <field name="error"/>
                               <field name="ttype"/>
                               <field name="etype"/>
@@ -129,6 +132,6 @@
          <field name="view_id" ref="product_big_tree" />
       </record>
 
-      <menuitem id="bidfood_product_big_log_menu" name="BidFood Product Log" parent="bidfood_custom.bidfood_sale_sequence" action="product_big_action"/>
+      <menuitem id="bidfood_product_big_log_menu" name="BidFood Log" parent="bidfood_custom.bidfood_sale_sequence" action="product_big_action"/>
    </data>
 </odoo>
