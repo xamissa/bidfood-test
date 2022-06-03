@@ -91,6 +91,7 @@ class product_big_log(models.Model):
                              string='State')
     product_big = fields.Many2one('product.big', string='Product Big')
     model=fields.Char(String="Model")
+    cr_date=fields.Datetime(string="Creation Date")
 
 
 class bidfood_sale(models.Model):
