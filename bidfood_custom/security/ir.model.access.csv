@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 accesst_bidfood_sale,bidfood.sale,model_bidfood_sale,,1,1,1,1
 accesst_bidfood_big_log,product.big.log,model_product_big_log,,1,1,1,1
+accesst_bidfood_big,product.big,model_product_big,,1,1,1,1

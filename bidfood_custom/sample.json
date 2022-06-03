@@ -1,0 +1,15 @@
+pos_obj = self.env['pos.order']
+pos_id = pos_obj.browse(id)
+
+{
+	'SOPTYPE':4,
+	'DOCID':pos_id.pos_reference
+	'SOPNUMBE':pos_id.account_move.name,
+	'TAXSCHID':'OUTPUTVAT - 15%',
+	'TAXAMNT':pos_id.amount_tax,
+	'DOCDATE':pos_id.invoice_date,
+	'CUSTNMBR':pos_id.partner_id.ref,
+	'SUBTOTAL':pos_id.amount_total - pos_id.amount_tax,
+	'DOCAMNT':pos_id.amount_total,
+	'PYMTRCVD':pos_id.amount_paid,
+}
