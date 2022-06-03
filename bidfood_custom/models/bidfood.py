@@ -56,6 +56,8 @@ class product_big(models.Model):
     name = fields.Char(string='Name')
     log_ids = fields.One2many('product.big.log', 'product_big',
                               string='Logs')
+    model=fields.Char(String="Model", compute="get_model")
+    cr_date=fields.Datetime(string="Creation Date", default=date.today())
 
     @api.model
     def create(self, vals):
@@ -70,6 +72,10 @@ class product_big(models.Model):
         vals['name'] = seq
         return super(product_big, self).create(vals)
 
+    def get_model(self):
+        for res in self:
+            for l in res.log_ids:
+                res.model = l.model
 
 class product_big_log(models.Model):
 
