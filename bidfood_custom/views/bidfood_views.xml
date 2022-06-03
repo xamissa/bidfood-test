@@ -55,6 +55,7 @@
                   <group>
                      <field name="name"/>
                      <field name="payload"/>
+                     <field name="model"/>
                      <field name="error"/>
                      <field name="ttype"/>
                      <field name="etype"/>
@@ -72,6 +73,7 @@
             <tree>
                <field name="name" />
                <field name="payload"/>
+               <field name="model"/>
                <field name="error"/>
             </tree>
          </field>
@@ -99,6 +101,7 @@
                            <tree>
                               <field name="name"/>
                               <field name="payload"/>
+                              <field name="model"/>
                               <field name="error"/>
                               <field name="ttype"/>
                               <field name="etype"/>
@@ -118,6 +121,8 @@
          <field name="arch" type="xml">
             <tree>
                <field name="name" />
+               <field name="model"/>
+               <field name="cr_date"/>
             </tree>
          </field>
       </record>
