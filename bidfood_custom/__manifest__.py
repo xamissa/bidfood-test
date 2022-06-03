@@ -14,8 +14,19 @@
         'views/product_views.xml',
       
     ],
+     'assets': {
+
+        'point_of_sale.assets': [
+             'bidfood_custom/static/src/js/models.js',
+             'bidfood_custom/static/src/js/product.js',
+            ],
+        'web.assets_qweb': [
+           'bidfood_custom/static/src/xml/**/*',
+        ],
+    },
     'depends': ['point_of_sale'],
     'qweb': [''],
     'installable': True,
+    'license': 'LGPL-3',
    
 }

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="DisabledRefundButton" t-inherit="point_of_sale.RefundButton" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('control-button')]" position="replace">
+            <div class="control-button" style="pointer-events:none; color:#bbb9b9;">
+            <i class="fa fa-undo" role="img" aria-label="Refund" title="Refund" />
+            Refund
+        </div>
+        </xpath>
+    </t>
+    <t t-name="OrderReceiptTAX" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="before">
+            <div>
+                <t t-set="is_refund" t-value="0"/>
+                <t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
+                    <t t-if="line.quantity>0">
+                        <t t-set="is_refund" t-value="line.quantity"/>
+                    </t>
+                </t>
+                <t t-if="is_refund>0">
+                    <center><span><strong>Tax Invoice</strong></span></center><br/>
+                </t> 
+                <t t-else="">
+                     <center><span><strong>Tax Return</strong></span></center><br/>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-if='receipt.company.contact_address']" position="after">
+             <div>
+                <t t-if="receipt.company.street">
+                        <t t-esc="receipt.company.street" />
+                </t>
+                <t t-if="receipt.company.street2">
+                        ,<t t-esc="receipt.company.street2" />,
+                </t>
+                <t t-if="receipt.company.city">
+                        <br/><t t-esc="receipt.company.city" />
+                </t>
+                <t t-if="receipt.company.zip">
+                        ,<t t-esc="receipt.company.zip" />.
+                </t>
+            </div>
+            <br/>
+        </xpath>
+
+        <xpath expr="//t[@t-if='receipt.company.vat']" position="replace">
+            <t t-if="receipt.company.vat">
+                <div>VAT No :<t t-esc="receipt.company.vat" /></div>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="after">
+            <t t-if="receipt.client">
+                <center><div>--------------------------------</div>
+                <div><strong>Customer Details</strong></div></center>
+                <div class="pos-receipt-contact">
+                     <t t-if="receipt.client.name">
+                        <strong><div><t t-esc="receipt.client.name" /></div></strong>
+                    </t>
+                   <t t-if="receipt.client.address">
+                        <div><t t-esc="receipt.client.address" /></div>
+                    </t>
+                    <t t-if="receipt.client.vat">
+                        <div>VAT No :<t t-esc="receipt.client.vat" /></div>
+                    </t>
+                </div>
+            </t>
+            <center><div>--------------------------------</div></center><br/>
+                <div class="pos-receipt-contact">
+                    <span><strong>Date: </strong><t t-esc="receipt.odate" /></span>
+                </div>
+        </xpath>
+
+        <xpath expr="//t[@t-foreach='receipt.paymentlines']" position="replace">
+            <t t-foreach="receipt.paymentlines" t-as="line" t-key="line.cid">
+                <div style="font-size:85%; margin-top:-2%;">
+                    <t t-esc="line.name" />
+                    <span t-esc="env.pos.format_currency_no_symbol(line.amount)" class="pos-receipt-right-align"/>
+                </div>
+                <span>-------------------------------</span>
+                <br/>
+            </t>
+        </xpath>
+
+        <xpath expr="//t[@t-if='receipt.cashier']" position="replace">
+        </xpath>
+
+        <xpath expr="//t[@t-if='!isTaxIncluded']" position="replace">
+            <t t-if="!isTaxIncluded">
+                <div class="pos-receipt-right-align">--------</div>
+                <br/>
+                <div style="font-size:85%;">Subtotal<span t-esc="env.pos.format_currency(receipt.subtotal)" class="pos-receipt-right-align"/></div>
+                <t t-foreach="receipt.tax_details" t-as="tax" t-key="tax.name">
+                    <div class="responsive-price" style="font-size:85%;">
+                        <!-- <t t-esc="tax.name" /> -->
+                        <span>VAT @ 15%</span>
+                        <span t-esc='env.pos.format_currency_no_symbol(tax.amount)' class="pos-receipt-right-align"/>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="replace">
+            <div class="pos-receipt-order-data">
+                <div><t t-esc="receipt.oname" /></div>
+                <t t-if="receipt.cashier">
+                    <div class="cashier">
+                        <div>--------------------------------</div>
+                        <div>Served by <t t-esc="receipt.cashier" /></div>
+                    </div>
+                </t>
+                <div>
+                    * NON-VAT item
+                </div>
+                
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('pos-receipt-amount')]" position="replace">
+            <div class="pos-receipt-amount" style="font-size:85%;">
+                <strong>TOTAL
+                <span t-esc="env.pos.format_currency(receipt.total_with_tax)" class="pos-receipt-right-align"/></strong>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[hasclass('receipt-change')]" position="replace">
+            <div class="pos-receipt-amount receipt-change" style="font-size:85%;">
+               <strong> CHANGE
+                <span t-esc="env.pos.format_currency(receipt.change)" class="pos-receipt-right-align"/></strong>
+            </div>
+        </xpath>
+
+    </t>
+    <t t-name="OrderRecLine" t-inherit="point_of_sale.OrderLinesReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//t[@t-foreach='receipt.orderlines']" position="replace">
+             <table style="width:100%;" class="responsive-price">
+                <tbody>
+                    <tr style="border-bottom: 1px solid black;border-top: 1px solid black;font-size:85%;">
+                        <!-- <td style="width:27%;"><strong>Internal Ref.</strong></td> -->
+                        <td style="width:70%;text-align:center;"><strong>Product</strong></td>
+                        <td style="text-align:left;width:10%;"><strong>Qty</strong></td>
+
+                       <!--  <td><strong>UOM</strong></td> -->
+                        <td style="text-align:right;width:19%;"><strong>Price</strong></td>
+                        <td style="width:1%;"></td>
+                    </tr>
+                    <t t-foreach="receipt.orderlines" t-as="line" t-key="line.id">
+                        <t t-if="isSimple(line)">
+                                <tr style="border-bottom: 1px solid black;font-size:75%;">
+                                   <!--  <td style="width:27%;"><t t-esc="line.default_code"/></td> -->
+                                    <td style="width:70%;"><t t-esc="line.product_name"/></td>
+                                    <td style="text-align:center;width:10%"><t t-esc="line.quantity"/></td>
+                                    <!-- <td><t t-esc="line.unit_name"/></td> -->
+                                    <td style="text-align:right;width:19%;"><t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/></td>
+                                    <t t-if="line.price_without_tax == line.price_with_tax">
+                                        <td style="width:1%;">*</td>
+                                    </t>
+                                </tr>
+                        </t>
+                        <t t-else="">
+                            <!-- <div t-esc="line.product_name_wrapped[0]" />
+                            <WrappedProductNameLines line="line" />
+                            <t t-if="line.display_discount_policy == 'without_discount' and line.price != line.price_lst">
+                                <div class="pos-receipt-left-padding">
+                                    <t t-esc="env.pos.format_currency_no_symbol(line.price_lst)" />
+                                    ->
+                                    <t t-esc="env.pos.format_currency_no_symbol(line.price)" />
+                                </div>
+                            </t> -->
+                            <tr style="border-bottom: 1px solid black;font-size:75%;">
+                               <!--  <td style="width:27%;"><t t-esc="line.default_code"/></td> -->
+                                <td style="width:70%;"><t t-esc="line.product_name"/></td>
+                                <td style="text-align:center;width:10%"><t t-esc="line.quantity"/></td>
+                                <!-- <td><t t-esc="line.unit_name"/></td> -->
+                                <td style="text-align:right;width:19%;"><t t-esc="env.pos.format_currency_no_symbol(line.price_display_one)"/></td>
+                                <t t-if="line.price_without_tax == line.price_with_tax">
+                                    <td style="width:1%;">*</td>
+                                </t>
+                            </tr>
+                           <!--  <t t-elif="line.discount !== 0">
+                                <div class="pos-receipt-left-padding">
+                                    <t t-if="env.pos.config.iface_tax_included === 'total'">
+                                        <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax_before_discount)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
+                                    </t>
+                                </div>
+                            </t> -->
+                            <t t-if="line.discount !== 0">
+                                <div class="pos-receipt-left-padding" style="font-size:85%;">
+                                    Discount: <t t-esc="line.discount" />%
+                                </div>
+                            </t>
+                            <!-- <div class="pos-receipt-left-padding">
+                                <t t-esc="Math.round(line.quantity * Math.pow(10, env.pos.dp['Product Unit of Measure'])) / Math.pow(10, env.pos.dp['Product Unit of Measure'])"/>
+                                <t t-if="!line.is_in_unit" t-esc="line.unit_name" />
+                                x
+                                <t t-esc="env.pos.format_currency_no_symbol(line.price_display_one)" />
+                                <span class="price_display pos-receipt-right-align">
+                                    <t t-esc="env.pos.format_currency_no_symbol(line.price_display)" />
+                                </span>
+                            </div> -->
+                        </t>
+                        <t t-if="line.customer_note">
+                            <div class="pos-receipt-left-padding pos-receipt-customer-note">
+                                <t t-esc="line.customer_note"/>
+                            </div>
+                        </t>
+                        <t t-if="line.pack_lot_lines">
+                            <div class="pos-receipt-left-padding">
+                                <ul>
+                                    <t t-foreach="line.pack_lot_lines" t-as="lot" t-key="lot.cid">
+                                        <li>
+                                            SN <t t-esc="lot.attributes['lot_name']"/>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </t>
+                    </t>
+                </tbody>
+            </table>
+        </xpath>
+    </t>
+</templates>
