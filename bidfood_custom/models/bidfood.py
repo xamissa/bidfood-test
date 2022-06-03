@@ -56,6 +56,8 @@ class product_big(models.Model):
     name = fields.Char(string='Name')
     log_ids = fields.One2many('product.big.log', 'product_big',
                               string='Logs')
+    model=fields.Char(String="Model", compute="get_model")
+    cr_date=fields.Datetime(string="Creation Date", default=date.today())
 
     @api.model
     def create(self, vals):
@@ -69,6 +71,11 @@ class product_big(models.Model):
                        ].next_by_code('common.log.book.food') or '/'
         vals['name'] = seq
         return super(product_big, self).create(vals)
+
+    def get_model(self):
+        for res in self:
+            for l in res.log_ids:
+                res.model = l.model
 
 
 class product_big_log(models.Model):
@@ -84,6 +91,8 @@ class product_big_log(models.Model):
     etype = fields.Selection([('fail', 'Fail'), ('done', 'Done')],
                              string='State')
     product_big = fields.Many2one('product.big', string='Product Big')
+    model=fields.Char(String="Model")
+    cr_date=fields.Datetime(string="Creation Date")
 
 
 class bidfood_sale(models.Model):
@@ -223,6 +232,7 @@ class bidfood_sale(models.Model):
                     log_book_id = product_log.create({
                         'name': r['product_name'],
                         'product_big': product_big.id,
+                        'model':'product.product',
                         'etype': 'done',
                         'ttype': 'create',
                         'payload': r,
@@ -231,6 +241,7 @@ class bidfood_sale(models.Model):
                 log_book_id = product_log.create({
                     'name': r['product_name'],
                     'product_big': product_big.id,
+                    'model':'product.product',
                     'etype': 'fail',
                     'ttype': 'create',
                     'payload': r,
@@ -319,6 +330,7 @@ class bidfood_sale(models.Model):
                     log_book_id = product_log.create({
                         'name': product.name,
                         'product_big': product_big.id,
+                        'model':'product.product',
                         'etype': 'done',
                         'ttype': 'update',
                         'payload': r,
@@ -327,6 +339,7 @@ class bidfood_sale(models.Model):
                 log_book_id = product_log.create({
                     'name': product.name,
                     'product_big': product_big.id,
+                    'model':'product.product',
                     'etype': 'fail',
                     'ttype': 'update',
                     'payload': r,
@@ -461,6 +474,7 @@ class bidfood_sale(models.Model):
         if res.get('response') == 'Success':
              log_book_id = product_log.create({
                         'product_big': product_big.id,
+                        'model':'sale.order',
                         'etype': 'done',
                         'ttype': 'create',
                         'payload': payload,
@@ -470,6 +484,7 @@ class bidfood_sale(models.Model):
             log_book_id = product_log.create({
                     'name': 'Fail',
                     'product_big': product_big.id,
+                    'model':'sale.order',
                     'etype': 'fail',
                     'ttype': 'create',
                     'payload': payload,
