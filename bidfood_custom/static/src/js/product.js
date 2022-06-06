@@ -38,7 +38,6 @@ models.PosModel = models.PosModel.extend({
                     method: 'search_read',
                     domain: [["branch", "=", self.config.branch],['siteid','=',self.config.site_id]],
                 }).then(function (products) {
-                    console.log("!!!!!!!!!!",products);
                     self.db.add_products(_.map(products, function (product) {
                         product.categ = _.findWhere(self.product_categories, {'id': product.categ_id[0]});
                         product.pos = self;
