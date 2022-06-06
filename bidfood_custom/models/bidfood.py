@@ -57,7 +57,6 @@ class product_big(models.Model):
     log_ids = fields.One2many('product.big.log', 'product_big',
                               string='Logs')
     model=fields.Char(String="Model", compute="get_model")
-    cr_date=fields.Datetime(string="Creation Date", default=date.today())
 
     @api.model
     def create(self, vals):
@@ -92,7 +91,6 @@ class product_big_log(models.Model):
                              string='State')
     product_big = fields.Many2one('product.big', string='Product Big')
     model=fields.Char(String="Model")
-    cr_date=fields.Datetime(string="Creation Date")
 
 
 class bidfood_sale(models.Model):
@@ -213,7 +211,6 @@ class bidfood_sale(models.Model):
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
                 val.update({'taxes_id':[(6,0,[tax])]})
-            print("r['blocked']---------------",type(r['blocked']))
             if r['blocked'] == 0:
                 val.update({'available_in_pos': True})
             if r['blocked'] == 1:
@@ -258,7 +255,6 @@ class bidfood_sale(models.Model):
         company_obj = self.env['res.company']
         for r in create_product:
             val = {}
-            print(r)
             barcode = ''
             temp = ''
             product = self.env['product.template'].browse(r['product_id'
@@ -301,10 +297,6 @@ class bidfood_sale(models.Model):
                 val.update({'list_price': r['sellingPrice']})
             if product.gp_unit != r['unit_of_measure']:
                 val.update({'gp_unit': r['unit_of_measure']})
-
-           # if product.to_weight != to_weight:
-           #   val.update({'to_weight':to_weight})
-
             if product.pos_categ_id.id != int(categ_id):
                 val.update({'pos_categ_id': int(categ_id)})
             if product.available_in_pos != True:
@@ -354,7 +346,6 @@ class bidfood_sale(models.Model):
             data={}
             pos_pay = self.env['pos.payment']
             payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
-            print(payment_id)
             paymentType=''
             if pos.refunded_order_ids:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
@@ -366,7 +357,6 @@ class bidfood_sale(models.Model):
                 card=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
-                       print("===============",i.payment_method_id.name)
                        cash=i.amount+cash
                        paymentTypecash="4"
                     if i.payment_method_id.name=='Credit Card Payment':
@@ -474,7 +464,7 @@ class bidfood_sale(models.Model):
         if res.get('response') == 'Success':
              log_book_id = product_log.create({
                         'product_big': product_big.id,
-                        'model':'sale.order',
+                        'model':'pos.order',
                         'etype': 'done',
                         'ttype': 'create',
                         'payload': payload,
@@ -484,7 +474,7 @@ class bidfood_sale(models.Model):
             log_book_id = product_log.create({
                     'name': 'Fail',
                     'product_big': product_big.id,
-                    'model':'sale.order',
+                    'model':'pos.order',
                     'etype': 'fail',
                     'ttype': 'create',
                     'payload': payload,
