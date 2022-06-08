@@ -1,2 +1,2 @@
 scale
-dbus
+dbus-python
