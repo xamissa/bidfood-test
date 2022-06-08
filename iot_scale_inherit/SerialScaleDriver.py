@@ -2,25 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from collections import namedtuple
-import logging
-import re
 import serial
-import threading
-import time
 
-from odoo import http
-from odoo.addons.hw_drivers.controllers.proxy import proxy_drivers
-from odoo.addons.hw_drivers.event_manager import event_manager
-from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialDriver, SerialProtocol, serial_connection
-
+from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialProtocol
 from odoo.addons.hw_drivers.iot_handlers.drivers import SerialScaleDriver
-
-
-_logger = logging.getLogger(__name__)
-
-# Only needed to ensure compatibility with older versions of Odoo
-ACTIVE_SCALE = None
-new_weight_event = threading.Event()
 
 ScaleProtocol = namedtuple('ScaleProtocol', SerialProtocol._fields + ('zeroCommand', 'tareCommand', 'clearCommand', 'autoResetWeight'))
 
