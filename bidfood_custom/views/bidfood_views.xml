@@ -50,7 +50,7 @@
          <field name="name">product.big.log.form</field>
          <field name="model">product.big.log</field>
          <field name="arch" type="xml">
-            <form>
+            <form edit="false">
                <sheet>
                   <group>
                      <field name="name"/>
@@ -90,7 +90,7 @@
          <field name="name">product.big.form</field>
          <field name="model">product.big</field>
          <field name="arch" type="xml">
-            <form>
+            <form create="false" edit="false">
                <sheet>
                   <group>
                      <field name="name"/>
@@ -119,7 +119,7 @@
          <field name="name">product.big.tree</field>
          <field name="model">product.big.log</field>
          <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                <field name="name" />
                <field name="model"/>
                <field name="create_date"/>
