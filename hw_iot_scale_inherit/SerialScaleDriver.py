@@ -8,8 +8,6 @@ from odoo.addons.hw_drivers.tools import helpers
 from odoo.addons.hw_drivers.main import Manager
 from odoo.addons.hw_drivers.main import interfaces
 
-_logger = logging.getLogger(__name__)
-
 drivers = []
 iot_devices = {}
 
