@@ -253,6 +253,7 @@ class bidfood_sale(models.Model):
         product_categ_obj = self.env['pos.category']
         product_big = self.env['product.big'].create({'name': 'Test'})
         company_obj = self.env['res.company']
+        uom_obj=self.env['uom.uom']
         for r in create_product:
             val = {}
             barcode = ''
@@ -315,6 +316,11 @@ class bidfood_sale(models.Model):
                 val.update({'taxes_id':[(6,0,[])]})
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
                 val.update({'taxes_id':[(6,0,[tax])]})
+
+            if r['unit_of_measure'] :
+               uom_id=uom_obj.search([('name','=',r['unit_of_measure'])],limit=1)
+               if uom_id:
+                  val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
 
             try:
                 if val:

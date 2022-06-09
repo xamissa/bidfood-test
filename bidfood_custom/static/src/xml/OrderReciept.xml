@@ -107,6 +107,8 @@
                 <t t-if="receipt.cashier">
                     <div class="cashier">
                         <div>--------------------------------</div>
+                        <div>Any Frozen and/or Chilled Stock collected<br/> In a non-refrigerated Vehicle is collected at <br/>own risk. No returns will be accepted and <br/>no liabilities accepted by Bidfood Polokwane.</div>
+                        <div>--------------------------------</div>
                         <div>Served by <t t-esc="receipt.cashier" /></div>
                     </div>
                 </t>
