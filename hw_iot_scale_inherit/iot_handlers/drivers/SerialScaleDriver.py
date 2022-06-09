@@ -14,7 +14,7 @@ ScaleProtocol = namedtuple('ScaleProtocol', SerialProtocol._fields + ('zeroComma
 #   e.g at https://www.adamequipment.com/media/docs/Print%20Publications/Manuals/PDF/AZEXTRA/AZEXTRA-UM.pdf
 #          https://www.manualslib.com/manual/879782/Adam-Equipment-Cbd-4.html?page=32#manual
 # Only the baudrate and label format seem to be configurable in the AZExtra series.
-ADAMEquipmentProtocol = ScaleProtocol(
+ADAMEquipmentProtocol1 = ScaleProtocol(
     name='Adam Equipment',
     baudrate=9600,
     bytesize=serial.EIGHTBITS,
@@ -39,4 +39,4 @@ ADAMEquipmentProtocol = ScaleProtocol(
     autoResetWeight=True,  # AZExtra will not return 0 after removing products
 )
 
-SerialScaleDriver.ADAMEquipmentProtocol = ADAMEquipmentProtocol
+SerialScaleDriver.ADAMEquipmentProtocol = ADAMEquipmentProtocol1
