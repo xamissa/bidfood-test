@@ -349,115 +349,126 @@ class bidfood_sale(models.Model):
         data_push = ''
         con=''
         for pos in orders:
-            data={}
-            pos_pay = self.env['pos.payment']
-            payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
-            print(payment_id)
-            paymentType=''
-            if pos.refunded_order_ids:
-                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
-                paymentLines=[]
-                amount=0.0
-                paymentTypecash=''
-                cash=0.0
-                paymentTypecard=''
-                card=0.0
-                for i in payment_id:
-                    if i.payment_method_id.name=='Cash Payment':
-                       print("===============",i.payment_method_id.name)
-                       cash=i.amount+cash
-                       paymentTypecash="4"
-                    if i.payment_method_id.name=='Credit Card Payment':
-                       card=i.amount+card
-                       paymentTypecard="6"
-                    
+            if  pos.pos_reference:
+                url = 'https://postest.bidfood.co.za/api/InvoiceCheck'
+                order_ref= pos.pos_reference.replace('Order','').strip()
+                payload = json.dumps({
+  "POSSalesOrderNr": order_ref
+})
+                self.bidfood_token()
+                headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'}
+                response = requests.request("POST", url, headers=headers, data=payload)
+                if response.status_code==200 and response.json().get('exists')!=True:
                 
-                if paymentTypecash:
-                       payment={ "paymentType":  paymentTypecash,
-                                "paymentAmount": cash}
-                       paymentLines.append(   payment)
-                if paymentTypecard:
-                       payment={ "paymentType":  paymentTypecard,
-                                "paymentAmount": card}
-                       paymentLines.append(   payment)
-                data = {'posSalesOrderNr': pos.pos_reference,
-                        'branch':pos.company_id.branch,
-                        'siteID':pos.session_id.config_id.site_id,
-                        'docType': 4,
-                        'paymentLines':paymentLines,
-                       # 'docId':pos.pos_reference,
-                        'SOPNUMBE':pos.name,
-                        'TAXSCHID':'OUTPUTVAT - 15%',
-                        'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
-                        'CUSTNMBR':pos.partner_id.ref,
-                        'SUBTOTAL':abs(pos.amount_total - pos.amount_tax),
-                        'DOCAMNT':abs(pos.amount_total),
-                        'PYMTRCVD':abs(pos.amount_paid),
-                        'TAXAMNT':abs(pos.amount_tax),
-                        }
-                order_line = []
-                for line in pos.lines:
-                    line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
-                                 'itemDescription': line.product_id.name,
-                                 'quantity': abs(line.qty),
-                                 'price': round(line.price_unit, 2),
-                                  'uom':line.product_id.gp_unit,
-                                 'lineTotal': abs(line.price_subtotal_incl)
-                                 }
-                    order_line.append(line_dict)
-                data['invoiceLines']=order_line
-            else:
-                payment_id=pos_pay.search([('pos_order_id','=',pos.id),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
-                paymentLines=[]
-                amount=0.0
-                paymentTypecash=''
-                cash=0.0
-                paymentTypecard=''
-                card=0.0
-                for i in payment_id:
-                    if i.payment_method_id.name=='Cash Payment':
-                       cash=i.amount+cash
-                       paymentTypecash="4"
-                    if i.payment_method_id.name=='Credit Card Payment':
-                       card=i.amount+card
-                       paymentTypecard="6"
-                    
-                
-                if paymentTypecash:
-                       payment={ "paymentType":  paymentTypecash,
-                                "paymentAmount": cash}
-                       paymentLines.append(   payment)
-                if paymentTypecard:
-                       payment={ "paymentType":  paymentTypecard,
-                                "paymentAmount": card}
-                       paymentLines.append(   payment)            
-                data = {'posSalesOrderNr': pos.pos_reference,
-      'branch':pos.company_id.branch,
-                        'siteID':pos.session_id.config_id.site_id,
-                        'docType': 3,
-                        'paymentLines':paymentLines,
-                        #'docId':pos.pos_reference,
-                        'SOPNUMBE':pos.name,
-                        'TAXSCHID':'OUTPUTVAT - 15%',
-                        'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
-                        'CUSTNMBR':pos.partner_id.ref,
-                        'SUBTOTAL':pos.amount_total - pos.amount_tax,
-                        'DOCAMNT':pos.amount_total,
-                        'PYMTRCVD':pos.amount_paid,
-                        'TAXAMNT':pos.amount_tax,}
-                order_line = []
-                for line in pos.lines:
-                    line_dict = {'itemCode': (line.product_id.default_code).strip(),
-                                 'itemDescription': line.product_id.name,
-                                 'quantity': line.qty,
-                                  'uom':line.product_id.gp_unit,
-                                   'lineTotal': line.price_subtotal_incl,
-                                 'price': round(line.price_unit, 2)}
-                    order_line.append(line_dict)
-                data['invoiceLines']=order_line
-            #data_push.append(data)
-            data_push = json.dumps(data)
-            self.bidfood_send(data_push)
+                    data={}
+                    pos_pay = self.env['pos.payment']
+                    payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
+                    print(payment_id)
+                    paymentType=''
+                    if pos.refunded_order_ids:
+                        payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
+                        paymentLines=[]
+                        amount=0.0
+                        paymentTypecash=''
+                        cash=0.0
+                        paymentTypecard=''
+                        card=0.0
+                        for i in payment_id:
+                            if i.payment_method_id.name=='Cash Payment':
+                               print("===============",i.payment_method_id.name)
+                               cash=i.amount+cash
+                               paymentTypecash="4"
+                            if i.payment_method_id.name=='Credit Card Payment':
+                               card=i.amount+card
+                               paymentTypecard="6"
+                            
+                        
+                        if paymentTypecash:
+                               payment={ "paymentType":  paymentTypecash,
+                                        "paymentAmount": cash}
+                               paymentLines.append(   payment)
+                        if paymentTypecard:
+                               payment={ "paymentType":  paymentTypecard,
+                                        "paymentAmount": card}
+                               paymentLines.append(   payment)
+                        data = {'posSalesOrderNr': pos.pos_reference,
+                                'branch':pos.company_id.branch,
+                                'siteID':pos.session_id.config_id.site_id,
+                                'docType': 4,
+                                'paymentLines':paymentLines,
+                               # 'docId':pos.pos_reference,
+                                'SOPNUMBE':pos.name,
+                                'TAXSCHID':'OUTPUTVAT - 15%',
+                                'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
+                                'CUSTNMBR':pos.partner_id.ref,
+                                'SUBTOTAL':abs(pos.amount_total - pos.amount_tax),
+                                'DOCAMNT':abs(pos.amount_total),
+                                'PYMTRCVD':abs(pos.amount_paid),
+                                'TAXAMNT':abs(pos.amount_tax),
+                                }
+                        order_line = []
+                        for line in pos.lines:
+                            line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
+                                         'itemDescription': line.product_id.name,
+                                         'quantity': abs(line.qty),
+                                         'price': round(line.price_unit, 2),
+                                          'uom':line.product_id.gp_unit,
+                                         'lineTotal': abs(line.price_subtotal_incl)
+                                         }
+                            order_line.append(line_dict)
+                        data['invoiceLines']=order_line
+                    else:
+                        payment_id=pos_pay.search([('pos_order_id','=',pos.id),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
+                        paymentLines=[]
+                        amount=0.0
+                        paymentTypecash=''
+                        cash=0.0
+                        paymentTypecard=''
+                        card=0.0
+                        for i in payment_id:
+                            if i.payment_method_id.name=='Cash Payment':
+                               cash=i.amount+cash
+                               paymentTypecash="4"
+                            if i.payment_method_id.name=='Credit Card Payment':
+                               card=i.amount+card
+                               paymentTypecard="6"
+                            
+                        
+                        if paymentTypecash:
+                               payment={ "paymentType":  paymentTypecash,
+                                        "paymentAmount": cash}
+                               paymentLines.append(   payment)
+                        if paymentTypecard:
+                               payment={ "paymentType":  paymentTypecard,
+                                        "paymentAmount": card}
+                               paymentLines.append(   payment)            
+                        data = {'posSalesOrderNr': pos.pos_reference,
+              'branch':pos.company_id.branch,
+                                'siteID':pos.session_id.config_id.site_id,
+                                'docType': 3,
+                                'paymentLines':paymentLines,
+                                #'docId':pos.pos_reference,
+                                'SOPNUMBE':pos.name,
+                                'TAXSCHID':'OUTPUTVAT - 15%',
+                                'DOCDATE':pos.date_order.strftime("%d.%m.%Y"),#pos.date_order,
+                                'CUSTNMBR':pos.partner_id.ref,
+                                'SUBTOTAL':pos.amount_total - pos.amount_tax,
+                                'DOCAMNT':pos.amount_total,
+                                'PYMTRCVD':pos.amount_paid,
+                                'TAXAMNT':pos.amount_tax,}
+                        order_line = []
+                        for line in pos.lines:
+                            line_dict = {'itemCode': (line.product_id.default_code).strip(),
+                                         'itemDescription': line.product_id.name,
+                                         'quantity': line.qty,
+                                          'uom':line.product_id.gp_unit,
+                                           'lineTotal': line.price_subtotal_incl,
+                                         'price': round(line.price_unit, 2)}
+                            order_line.append(line_dict)
+                        data['invoiceLines']=order_line
+                    #data_push.append(data)
+                    data_push = json.dumps(data)
+                    self.bidfood_send(data_push)
         return True
     def bidfood_send(self, payload):
         product_big = self.env['product.big'].create({'name': 'Test'})
