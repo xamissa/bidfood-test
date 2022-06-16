@@ -46,6 +46,7 @@ class PosOrder(models.Model):
 
     _inherit = 'pos.order'
     invoiceNumber = fields.Char(string='Invoice Number')
+    gp_unit_success = fields.Boolean(string="Success",default=False)
 
 
 class product_big(models.Model):
@@ -56,7 +57,7 @@ class product_big(models.Model):
     name = fields.Char(string='Name')
     log_ids = fields.One2many('product.big.log', 'product_big',
                               string='Logs')
-    model=fields.Char(String="Model", compute="get_model")    
+    log_model=fields.Char(String="Model", compute="get_model")
 
     @api.model
     def create(self, vals):
@@ -74,7 +75,7 @@ class product_big(models.Model):
     def get_model(self):
         for res in self:
             for l in res.log_ids:
-                res.model = l.model
+                res.log_model = l.log_model
 
 class product_big_log(models.Model):
 
@@ -89,7 +90,7 @@ class product_big_log(models.Model):
     etype = fields.Selection([('fail', 'Fail'), ('done', 'Done')],
                              string='State')
     product_big = fields.Many2one('product.big', string='Product Big')
-    model=fields.Char(String="Model")
+    log_model=fields.Char(String="Model")
     
 
 
@@ -230,7 +231,7 @@ class bidfood_sale(models.Model):
                     log_book_id = product_log.create({
                         'name': r['product_name'],
                         'product_big': product_big.id,
-                        'model':'product.product',
+                        'log_model':'product.product',
                         'etype': 'done',
                         'ttype': 'create',
                         'payload': r,
@@ -239,7 +240,7 @@ class bidfood_sale(models.Model):
                 log_book_id = product_log.create({
                     'name': r['product_name'],
                     'product_big': product_big.id,
-                    'model':'product.product',
+                    'log_model':'product.product',
                     'etype': 'fail',
                     'ttype': 'create',
                     'payload': r,
@@ -328,7 +329,7 @@ class bidfood_sale(models.Model):
                     log_book_id = product_log.create({
                         'name': product.name,
                         'product_big': product_big.id,
-                        'model':'product.product',
+                        'log_model':'product.product',
                         'etype': 'done',
                         'ttype': 'update',
                         'payload': r,
@@ -337,7 +338,7 @@ class bidfood_sale(models.Model):
                 log_book_id = product_log.create({
                     'name': product.name,
                     'product_big': product_big.id,
-                    'model':'product.product',
+                    'log_model':'product.product',
                     'etype': 'fail',
                     'ttype': 'update',
                     'payload': r,
@@ -353,8 +354,8 @@ class bidfood_sale(models.Model):
                 url = 'https://postest.bidfood.co.za/api/InvoiceCheck'
                 order_ref= pos.pos_reference.replace('Order','').strip()
                 payload = json.dumps({
-  "POSSalesOrderNr": order_ref
-})
+                                      "POSSalesOrderNr": order_ref
+                                    })
                 self.bidfood_token()
                 headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'}
                 response = requests.request("POST", url, headers=headers, data=payload)
@@ -468,9 +469,9 @@ class bidfood_sale(models.Model):
                         data['invoiceLines']=order_line
                     #data_push.append(data)
                     data_push = json.dumps(data)
-                    self.bidfood_send(data_push)
+                    self.bidfood_send(data_push,orders)
         return True
-    def bidfood_send(self, payload):
+    def bidfood_send(self, payload,orders):
         product_big = self.env['product.big'].create({'name': 'Test'})
         url = 'https://postest.bidfood.co.za/api/Invoice'
         self.bidfood_token()
@@ -479,11 +480,16 @@ class bidfood_sale(models.Model):
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res = response.json()
+        r1 = json.loads(payload)
         product_log = self.env['product.big.log']
         if res.get('response') == 'Success':
+             for order in orders:
+                order.gp_unit_success = True
+                if res.get('invoiceNumber') and order.pos_reference == r1.get('posSalesOrderNr'):
+                    order.write({'invoiceNumber':res.get('invoiceNumber')})
              log_book_id = product_log.create({
                         'product_big': product_big.id,
-                        'model':'pos.order',
+                        'log_model':'pos.order',
                         'etype': 'done',
                         'ttype': 'create',
                         'payload': payload,
@@ -493,7 +499,7 @@ class bidfood_sale(models.Model):
             log_book_id = product_log.create({
                     'name': 'Fail',
                     'product_big': product_big.id,
-                    'model':'pos.order',
+                    'log_model':'pos.order',
                     'etype': 'fail',
                     'ttype': 'create',
                     'payload': payload,
