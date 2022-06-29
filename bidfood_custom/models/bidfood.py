@@ -455,7 +455,7 @@ class bidfood_sale(models.Model):
                 data['invoiceLines']=order_line
             #data_push.append(data)
             data_push = json.dumps(data)
-            #self.bidfood_send(data_push)
+            self.bidfood_send(data_push)
         return True
     def bidfood_send(self, payload):
         product_big = self.env['product.big'].create({'name': 'Test'})
