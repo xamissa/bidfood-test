@@ -46,6 +46,7 @@ class PosOrder(models.Model):
 
     _inherit = 'pos.order'
     invoiceNumber = fields.Char(string='Invoice Number')
+    gp_unit_success = fields.Boolean(string="Success",default=False)
 
 
 class product_big(models.Model):
@@ -455,9 +456,9 @@ class bidfood_sale(models.Model):
                 data['invoiceLines']=order_line
             #data_push.append(data)
             data_push = json.dumps(data)
-            self.bidfood_send(data_push)
+            self.bidfood_send(data_push,orders)
         return True
-    def bidfood_send(self, payload):
+    def bidfood_send(self, payload,orders):
         product_big = self.env['product.big'].create({'name': 'Test'})
         url = 'https://pos.bidfood.co.za/api/Invoice'
         self.bidfood_token()
@@ -466,16 +467,21 @@ class bidfood_sale(models.Model):
 
         response = requests.request("POST", url, headers=headers, data=payload)
         res = response.json()
+        r1 = json.loads(payload)
         product_log = self.env['product.big.log']
         if res.get('response') == 'Success':
-             log_book_id = product_log.create({
-                        'product_big': product_big.id,
-                        'model':'pos.order',
-                        'etype': 'done',
-                        'ttype': 'create',
-                        'payload': payload,
-                        'error': str(response.text),
-                        })
+            for order in orders:
+                order.gp_unit_success = True
+                if res.get('invoiceNumber') and order.pos_reference == r1.get('posSalesOrderNr'):
+                    order.write({'invoiceNumber':res.get('invoiceNumber')})
+            log_book_id = product_log.create({
+                    'product_big': product_big.id,
+                    'model':'pos.order',
+                    'etype': 'done',
+                    'ttype': 'create',
+                    'payload': payload,
+                    'error': str(response.text),
+                    })
         else:
             log_book_id = product_log.create({
                     'name': 'Fail',
