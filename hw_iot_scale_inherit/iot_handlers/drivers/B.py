@@ -4,6 +4,7 @@
 from odoo.addons.hw_drivers.iot_handlers.drivers.SerialScaleDriver import AdamEquipmentDriver
 from odoo.addons.hw_drivers.iot_handlers.drivers.SerialScaleDriver import ScaleProtocol
 from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialDriver, SerialProtocol, serial_connection
+import serial
 
 # import logging
 # _logger = logging.getLogger(__name__)
