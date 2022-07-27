@@ -2,11 +2,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.hw_drivers.iot_handlers.drivers.SerialScaleDriver import AdamEquipmentDriver
+from odoo.addons.hw_drivers.iot_handlers.drivers.SerialScaleDriver import ScaleProtocol
+from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialDriver, SerialProtocol, serial_connection
 
 # import logging
 # _logger = logging.getLogger(__name__)
 
 # AdamEquipmentDriver._protocol=AdamEquipmentDriver._protocol._replace(baudrate=9600)
+
 
 ADAMEquipmentProtocol1 = ScaleProtocol(
     name='Adam Equipment',
