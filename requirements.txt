@@ -1,0 +1,3 @@
+serial
+usb
+pyserial==3.4
