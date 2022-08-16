@@ -6,8 +6,8 @@ from odoo.addons.hw_drivers.iot_handlers.drivers.SerialScaleDriver import ADAMEq
 
 ADAMEquipmentProtocol.baudrate = 9600
 
-# class AdamEquipmentDriver(ScaleDriver):
-#     _protocol = ADAMEquipmentProtocol
+class AdamEquipmentDriver(ScaleDriver):
+    _protocol = ADAMEquipmentProtocol
 
-#     def __init__(self, identifier, device):
-#         super.__init__(identifier, device)
+    def __init__(self, identifier, device):
+        super.__init__(identifier, device)
