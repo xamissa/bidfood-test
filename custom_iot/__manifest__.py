@@ -10,7 +10,7 @@
     'data': [
       
     ],
-    'depends': ['iot'],
+    'depends':[],
     'qweb': [''],
     'installable': True,
 }
