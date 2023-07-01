@@ -56,7 +56,7 @@ class product_big(models.Model):
     name = fields.Char(string='Name')
     log_ids = fields.One2many('product.big.log', 'product_big',
                               string='Logs')
-    model=fields.Char(String="Model", compute="get_model")
+    model=fields.Char(string="Model")
 
     @api.model
     def create(self, vals):
@@ -90,7 +90,7 @@ class product_big_log(models.Model):
     etype = fields.Selection([('fail', 'Fail'), ('done', 'Done')],
                              string='State')
     product_big = fields.Many2one('product.big', string='Product Big')
-    model=fields.Char(String="Model")
+    model=fields.Char(string="Model")
 
 
 class bidfood_sale(models.Model):
