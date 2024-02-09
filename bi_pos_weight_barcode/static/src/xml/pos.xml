@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="pos_orders_reprint_template" inherit_id="point_of_sale.template" xml:space="preserve">
+
+	<t t-name="BiScaleScreen" owl="1">
+		<div class="scale-screen screen">
+			<div class="screen-content">
+				<div class="top-content">
+					<span class="button back" t-on-click="back">
+						<i class="fa fa-angle-double-left"></i>
+						Back
+					</span>
+					<h1 class="product-name">
+						<t t-esc="productName" />
+					</h1>
+				</div>
+				<div class="centered-content">
+					<div class="weight js-weight">
+						<t t-esc="productWeightString" />
+					</div>
+					<div class="product-price">
+						<t t-esc="env.pos.format_currency(productPrice) + '/' + productUom" />
+					</div>
+					<div class="computed-price">
+						<t t-esc="computedPriceString" />
+					</div>
+					<div class="create-weight-barcode" t-on-click="createBarcode">
+						Barcode
+						<i class="fa fa-angle-double-right"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</t>
+
+	<t t-name="BiProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension" owl="1">
+		<xpath expr="//div[hasclass('leftpane')]" position="attributes">
+			<attribute name="t-att-style"> env.pos.config.is_weight_scale_screen ?  'display: None;' : ''</attribute>
+		</xpath> 
+	</t>
+
+	<t t-name="WBReceiptScreen" owl="1">
+		<div class="receipt-screen screen">
+			<div class="screen-content">
+				<div class="top-content">
+					<div class="top-content-center">
+						<h1> Product Weight Screen</h1>
+					</div>
+					<span class="button next highlight" t-on-click="back">
+						<span>Ok</span>
+						<span> </span>
+						<i class="fa fa-angle-double-right"></i>
+					</span>
+				</div>
+				<div class="centered-content">
+					<div class="button print" t-on-click="printReceipt">
+						<i class="fa fa-print"></i>
+						<span> </span>
+						<span>Print</span>
+					</div>
+					<div class="pos-receipt-container">
+						<WBReceipt 
+							barcode = "props.barcode"
+							product = "props.product"
+							weight = "props.weight"
+							price = "props.price"
+							t-ref="order-receipt"			
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</t>
+
+	<t t-name="WBReceipt" owl="1">
+		<div class="pos-receipt">
+			<div style="font-size: 16px;font-weight: bold;">
+				<div style="text-align:center;"><span t-esc="todaydate"/></div>
+				<span style="display:none;" t-esc="receiptBarcode"/>
+				<div style="margin:auto;margin-top:10px;" id="barcode_print1"></div>
+				<div style="text-align:center;font-size: 14px;padding: 5px;"><span t-esc="product"/></div>
+				<div style="width: 100%;display: flex;">
+					<div style="width:50%;"> 
+						<span t-esc="weight"/>
+					</div>
+					<div style="width:50%;text-align:right;"> 
+						<span t-esc="price"/>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</t>
+
+
+</templates>
+
+

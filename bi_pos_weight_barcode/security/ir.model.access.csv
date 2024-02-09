@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+bi_pos_weight_barcode.access_product_weight_barcode,access_product_weight_barcode,bi_pos_weight_barcode.model_product_weight_barcode,,1,1,1,1
