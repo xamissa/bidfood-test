@@ -76,7 +76,9 @@
 			<div style="font-size: 16px;font-weight: bold;">
 				<div style="text-align:center;"><span t-esc="todaydate"/></div>
 				<span style="display:none;" t-esc="receiptBarcode"/>
-				<div style="margin:auto;margin-top:10px;" id="barcode_print1"></div>
+				<div id="barcode_print1" class="pos-receipt-contact">
+                    <img width="200" height="100" t-att-src="receiptBarcode" />
+                </div>
 				<div style="text-align:center;font-size: 14px;padding: 5px;"><span t-esc="product"/></div>
 				<div style="width: 100%;display: flex;">
 					<div style="width:50%;"> 

@@ -32,11 +32,11 @@ odoo.define('bi_pos_weight_barcode.WBReceipt', function(require) {
 
 		get receiptBarcode(){
 			let barcode = this.props.barcode;
-			$("#barcode_print1").barcode(
-				barcode, // Value barcode (dependent on the type of barcode)
-				"code128" // type (string)
-			);
-		return true
+			var img = new Image();
+            img.id = "test-barcode";
+            $(img).JsBarcode(barcode.toString());
+            barcode = $(img)[0] ? $(img)[0].src : false;
+		return barcode
 		}
 
 	}
