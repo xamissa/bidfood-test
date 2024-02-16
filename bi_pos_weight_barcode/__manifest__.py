@@ -23,6 +23,7 @@
 			'bi_pos_weight_barcode/static/src/css/pos.css',
 			'bi_pos_weight_barcode/static/src/js/models.js',
             'bi_pos_weight_barcode/static/src/js/jquery-barcode.js',
+            'bi_pos_weight_barcode/static/src/js/JsBarcode.all.min.js',
 			"bi_pos_weight_barcode/static/src/js/Screens/BiScaleScreen.js",
 			"bi_pos_weight_barcode/static/src/js/Screens/ProductScreen.js",
 			"bi_pos_weight_barcode/static/src/js/Screens/WBReceiptScreen.js",
