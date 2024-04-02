@@ -80,7 +80,7 @@ odoo.define('bi_pos_weight_barcode.BiScaleScreen', function(require) {
 		}
 		get productPrice() {
 			const product = this.props.product;
-			return (product ? product.get_price(this._activePricelist, this.state.weight) : 0) || 0;
+			return (product ? product.get_display_price(this._activePricelist, this.state.weight) : 0) || 0;
 		}
 		get productName() {
 			return (
