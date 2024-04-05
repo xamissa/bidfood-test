@@ -185,6 +185,8 @@ class bidfood_sale(models.Model):
                 tax=1
             elif company_id == 2:
                 tax=17
+            elif company_id == 3:
+                tax=33
 
             #tax_id = self.env['account.tax'].search([('company_id', '=', company_id),('type_tax_use', '=', 'sale'),('name', '=', 'Standard Rate')],limit=1)
 
@@ -288,6 +290,8 @@ class bidfood_sale(models.Model):
                 tax=1
             elif company_id.id == 2:
                 tax=17
+            elif company_id.id == 3:
+                tax=33
             #tax_id = self.env['account.tax'].search([('company_id', '=', company_id.id),('type_tax_use', '=', 'Sales'),('name', '=', 'Standard Rate')],limit=1)
 
             if product.name != r['product_name']:
