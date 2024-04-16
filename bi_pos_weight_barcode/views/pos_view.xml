@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_view_pos_config" model="ir.ui.view">
+            <field name="name">inherit.view.pos.config</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id = 'customer_display']" position="after">
+                    <div id="weight_display" class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="is_weight_scale_screen"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="is_weight_scale_screen"/>
+                            <div class="text-muted">
+                                Create product weight barcode and print. 
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
