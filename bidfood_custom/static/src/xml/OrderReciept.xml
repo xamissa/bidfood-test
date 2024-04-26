@@ -106,9 +106,9 @@
                 <div><t t-esc="receipt.oname" /></div>
                 <t t-if="receipt.cashier">
                     <div class="cashier">
-                        <div>--------------------------------</div>
+                        <t t-if="receipt.company.name != 'Gqeberha'"> <div>--------------------------------</div>
                         <div>Any Frozen and/or Chilled Stock collected<br/> In a non-refrigerated Vehicle is collected at <br/>own risk. No returns will be accepted and <br/>no liabilities accepted by Bidfood <t t-esc="receipt.company.name"/>.</div>
-                        <div>--------------------------------</div>
+                        </t><div>--------------------------------</div>
                         <div>Served by <t t-esc="receipt.cashier" /></div>
                     </div>
                 </t>
