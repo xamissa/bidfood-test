@@ -23,7 +23,7 @@ class Productemplate(models.Model):
                 if currency.compare_amounts(excluded, rec.list_price):
                     amt = format_amount(self.env, excluded, currency)
             else:
-                amt = rec.list_price
+                amt = format(rec.list_price, ".2f")  
             return amt
 
     @api.depends('taxes_id', 'list_price')
@@ -42,7 +42,7 @@ class Productemplate(models.Model):
                 trim = re.compile(r'[^\d.,]+')
                 amt = trim.sub('', amt)
             else:
-                amt = rec.list_price
+                amt = format(rec.list_price, ".2f")
             return float(amt)
 
 class ProductProduct(models.Model):
@@ -62,7 +62,7 @@ class ProductProduct(models.Model):
                 if currency.compare_amounts(excluded, rec.lst_price):
                     amt = format_amount(self.env, excluded, currency)
             else:
-                amt = rec.list_price
+                amt = format(rec.list_price, ".2f")
             return amt
 
     @api.depends('lst_price', 'taxes_id')
@@ -81,5 +81,5 @@ class ProductProduct(models.Model):
                 trim = re.compile(r'[^\d.,]+')
                 amt = trim.sub('', amt)
             else:
-                amt = rec.list_price
+                amt = format(rec.list_price, ".2f")
             return float(amt)
