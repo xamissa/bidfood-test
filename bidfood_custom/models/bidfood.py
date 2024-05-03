@@ -103,12 +103,12 @@ class bidfood_sale(models.Model):
     password = fields.Char(string='Password', copy=False)
     token = fields.Char(string='Token', copy=False, readonly=True)
     url = fields.Char(string='URL', copy=False,
-                      default='https://pos.bidfood.co.za/api/Product/authentication'
+                      default='https://pos.bidfood.co.za/api/Product/authenticationtest'
                       )
 
     def bidfood_token(self):
         headers = {'Content-Type': 'application/json'}
-        url='https://pos.bidfood.co.za/api/Product/authentication'
+        url='https://pos.bidfood.co.za/api/Product/authenticationtest'
         payload = json.dumps({'userName': self.name,
                              'password': self.password})
         resp = requests.post(url, headers=headers, data=payload)
@@ -123,7 +123,7 @@ class bidfood_sale(models.Model):
 
     def bidfood_product(self):
         payload = {}
-        url = 'https://pos.bidfood.co.za/api/Product'
+        url = 'https://pos.bidfoodtest.co.za/api/Producttest'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token}
         resp = requests.request('GET', url, headers=headers,
@@ -463,7 +463,7 @@ class bidfood_sale(models.Model):
         return True
     def bidfood_send(self, payload):
         product_big = self.env['product.big'].create({'name': 'Test'})
-        url = 'https://pos.bidfood.co.za/api/Invoice'
+        url = 'https://pos.bidfood.co.zatest/api/Invoicetest'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'
 }
