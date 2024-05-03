@@ -105,27 +105,29 @@ class PosPaymentMethod(models.Model):
         pos.payment.method.
         '''
         TIMEOUT = 1000
-        endpoint = 'https://terminal-api-live.iveri.com/async'
+        #endpoint = 'https://196,13.126.201:9080/rest/transaction/transact'
+        #endpoint = 'https://terminal-api-live.iveri.com/async'
         #if test_mode:
-        #endpoint = 'https://ingenico.indigo.iveri.net/rest/transaction/transact'
-        endpoint='https://indigonedbank.iveri.com:9080/rest/transaction/transact'
+        endpoint = 'https://ingenico.indigo.iveri.net/rest/transaction/transact'
+        #endpoint = 'https://indigonendbank.iveri.com:9080/rest/transaction/transact'
+        #endpoint='https://indigonedbank.iveri.com:9080/rest/transaction/transact'
+
         _logger.info('request to iveri\n%s', pprint.pformat(data))
         headers = {
             #'x-api-key': api_key,
             'Content-Type': 'application/json'
         }
         req = requests.post(endpoint, data=json.dumps(data), headers=headers, timeout=TIMEOUT)
-        _logger.info('responsie from iveri (HTTP status %s)===========================:\n%s', req.status_code, req.text)
+        _logger.info('responsie from iveri (HTTP status %s)=====================%s======:\n%s', req.status_code, req.text)
         ret={}
         if req.status_code!=405:
             ret=req.json()
         
 
 
-        _logger.info("==================resule  ===%s",type(ret.get('ResultCode')))
-        #print("+++++++++++++++++++++++++++++++++++++++++++====+++++",req.json())
-        if 'Result' in ret and ret.get('Result')['Code'] =='0' and ret.get('Result')['Description']=='Void Approved':
-           return ret
+        _logger.info("==========%s========resule  ===%s",ret,ret.get('ResultCode'))
+        if 'Result' in ret and ret.get('Result')['Code'] !='0' and 'Description' in ret and  ret.get('Result')['Description']=='Void Approved':
+           return ret.json()
            
 
         if ret.get('ResultCode') =="0":

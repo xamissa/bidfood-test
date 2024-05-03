@@ -1,10 +1,10 @@
-odoo.define('pos_iveri.payment', function (require) {
+odoo.define('pos_iveri_15.payment', function (require) {
 "use strict";
 
 var core = require('web.core');
 var rpc = require('web.rpc');
 var PaymentInterface = require('point_of_sale.PaymentInterface');
-var { Gui } = require('point_of_sale.Gui');
+const { Gui } = require('point_of_sale.Gui');
 var _t = core._t;
 
 var PaymentIveri = PaymentInterface.extend({
@@ -14,6 +14,14 @@ var PaymentIveri = PaymentInterface.extend({
         return this._iveri_pay();
     },
     send_payment_cancel: function (order, cid) {
+        this._super.apply(this, arguments);
+        var line = this.pos.get_order().selected_paymentline;
+        console.log("send_payment_cancel"+line.payment_status)
+        // set only if we are polling
+        this.was_cancelled = !!this.polling;
+        return this._iveri_cancel();
+    },
+ send_payment_void: function (order, cid) {
         this._super.apply(this, arguments);
         // set only if we are polling
         this.was_cancelled = !!this.polling;
@@ -35,7 +43,7 @@ var PaymentIveri = PaymentInterface.extend({
         // handle timeout
         var line = this.pos.get_order().selected_paymentline;
         if (line) {
-            line.set_payment_status('waitingCard');
+            line.set_payment_status('retry');
         }
         this._show_error(_('Could not connect to the Odoo server, please check your internet connection and try again.'));
 
@@ -119,11 +127,78 @@ var user = this.pos.get_cashier();
 
         return data;
     },
+   _iveri_pay_credit: function () {
+        var order = this.pos.get_order();
+        const change = order.get_change();
+        var user = this.pos.get_cashier();
+        var config = this.pos.config;
+        var line = order.selected_paymentline;
+        var orderline=order.get_selected_orderline();
+        var t =orderline.refunded_orderline_id in this.pos.toRefundLines;
+        if(t)
+        {
+            const toRefundDetail = this.pos.toRefundLines[orderline.refunded_orderline_id];
+            var r_id = toRefundDetail.orderline.orderUid;
+        }
+        let orders = "Order ";
+        var refunder=orders.concat(r_id);
+        if (line.amount < 0 )
+        {
+            if (line.amount == -Math.abs(change))
+            {
+                var data = {
 
+                    "Command": "Credit",
+                    "DeviceSerialNumber": this.payment_method.iveri_terminal_identifier,
+                    "MerchantReference":refunder,
+                    'Amount': parseInt(line.amount*100)* -1,
+                    "Terminal" : user.name,
+
+                    'SaleToPOIRequest': {
+                        'MessageHeader': _.extend(this._iveri_common_message_header(), {
+                            'MessageCategory': 'Payment',
+                        }),
+                        'PaymentRequest': {
+                            'SaleData': {
+                                'SaleTransactionID': {
+                                    'TransactionID': order.uid,
+                                    'TimeStamp': moment().format(), // iso format: '2018-01-10T11:30:15+00:00'
+                                }
+                            },
+                            'PaymentTransaction': {
+                                'AmountsReq': {
+                                    'Currency': this.pos.currency.name,
+                                    'RequestedAmount': line.amount,
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+            else
+            {
+                this._show_error(_('Diffrent price.'));
+            }
+        }
+        else
+        {
+            this._show_error(_('Diffrent price.'));
+        }
+
+      
+
+        return data;
+    },
     _iveri_pay: function () {
         var self = this;
         var data = this._iveri_pay_data();
-console.log("***************************datae before"+JSON.stringify(data));
+        var order = this.pos.get_order();
+
+        if (order.selected_paymentline.amount < 0) {
+            var data = this._iveri_pay_credit();
+            //this._show_error(_t('Cannot process transactions with negative amount.'));
+            //return Promise.resolve();
+        }
         return this._call_iveri(data).then(function (data) {
             console.log("______ivery pay____data___"+JSON.stringify(data));
             return self._iveri_handle_response(data);
@@ -141,7 +216,7 @@ var user = this.pos.get_cashier();
         });
 
       var data = {
-  "Command": "Void",
+  "Command": "Cancel",
          "DeviceSerialNumber":  this.payment_method.iveri_terminal_identifier,
  "MerchantReference":order.name,
  'Amount': parseInt(line.amount*100),
@@ -248,7 +323,6 @@ console.log("***************data")
             var last_diagnosis_service_id = data.last_received_diagnosis_id;
             var order = self.pos.get_order();
             var line = order.selected_paymentline;
-console.log("=======================bhumika======data==="+JSON.stringify(status));
 
            /* if (self.last_diagnosis_service_id != last_diagnosis_service_id) {
                 self.last_diagnosis_service_id = last_diagnosis_service_id;
@@ -257,7 +331,6 @@ console.log("=======================bhumika======data==="+JSON.stringify(status)
                 self.remaining_polls--;
             }*/
 
-       console.log("=========keys===========notifi"+ Object.keys(status));
             if (notification && notification.SaleToPOIRequest.MessageHeader.ServiceID == self.most_recent_service_id) {
         console.log("========inside===============notifcation");
                 var response = notification.SaleToPOIRequest.PaymentRequest.Response;
@@ -305,76 +378,35 @@ console.log("=======================bhumika======data==="+JSON.stringify(status)
     },
 
     _iveri_handle_response: function (response) {
-        console.log("+++++++++response+++++"+response);
+        console.log("+++++++++responseresponse.Result.Description+++++"+response.Result.Description);
+
         var line = this.pos.get_order().selected_paymentline;
- console.log("======================handle reposond==============datata respos"+JSON.stringify(response));
-	 if (response.Result && response.Result.Code!="0") {
+
+        if (response.Result && response.Result.Code!="0") {
             this._show_error(_t(response.Result.Description));
             line.set_payment_status('force_done');
             return Promise.resolve();
         }
-/*        if (response.error && response.error.status_code!="0") {
-            this._show_error(_t(response.error.message));
-            line.set_payment_status('force_done');
+        if (response.Result && response.Result.Code=="0" && response.Result.Description=="Void Approved") {
+            line.set_payment_status('void');
             return Promise.resolve();
         }
        
-*/
-       
-        response = response;
-        if (response && response.EventNotification && response.EventNotification.EventToNotify == 'Reject') {
-            console.error('error from Iveri', response);
-
-            var msg = '';
-            if (response.EventNotification) {
-                var params = new URLSearchParams(response.EventNotification.EventDetails);
-                msg = params.get('message');
-            }
-
-            self._show_error(_.str.sprintf(_t('An unexpected error occured. Message from Iveri: %s'), msg));
-            if (line) {
-                line.set_payment_status('force_done');
-            }
-
-            return Promise.resolve();
-        } else {
-            line.set_payment_status('waitingCard');
-
-            // This is not great, the payment screen should be
-            // refactored so it calls render_paymentlines whenever a
-            // paymentline changes. This way the call to
-            // set_payment_status would re-render it automatically.
-            this.pos.chrome.gui.current_screen.render_paymentlines();
-
-            var self = this;
-            /*var res = new Promise(function (resolve, reject) {
-                // clear previous intervals just in case, otherwise
-                // it'll run forever
-                clearTimeout(self.polling);
-
-                self.polling = setInterval(function () {
-                    self._poll_for_response(resolve, reject,data);
-                }, 5000);
-            });*/
-
+     
             // make sure to stop polling when we're done
 console.log("##ResultResultResult"+Object.keys(response));
     if (response.ResultCode=='0') {
-console.log("____________-im here");
               line.transaction_id = response.TransactionStatusInformation;
                     line.card_type = response.ApplicationLabel;
+                line.supports_reversals = false;
  return Promise.resolve(true);
 
               
 }
-            /*res.finally(function () {
-                self._reset_state();
-            });
-
-            return res;*/
-        }
+           
     },
 
+    
     _show_error: function (msg, title) {
         if (!title) {
             title =  _t('Iveri Error');
@@ -385,6 +417,7 @@ console.log("____________-im here");
         });
     },
 });
+
 
 return PaymentIveri;
 });

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="PaymentScreenElectronicPayment">
+        <t t-jquery=".send_request" t-operation="after">
+            <tr class="paymentline electronic_payment">
+                <t t-if="line.payment_status == 'void'">
+                    <td colspan="3">
+                    Request Void
+<t t-esc="line.payment_status"/>
+                    </td>
+                   <td colspan="2" class='button send_payment_void highlight' title="Send Void Request" t-att-data-cid='line.cid'>
+                    Void 
+                </td>
+                </t>
+            </tr>
+        </t>
+    </t>
+
+   
+</templates>

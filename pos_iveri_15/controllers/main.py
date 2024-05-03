@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 _logger.info("==========================call =================")
 class PosIveriController(http.Controller):
     _logger.info("=============================test")
-    @http.route('/pos_iveri/notification', type='json', methods=['POST'], auth='none', csrf=False)
+    @http.route('/pos_iveri_15/notification', type='json', methods=['POST'], auth='none', csrf=False)
     def notification(self):
         _logger.info("==========PosIveriController=======================m")
         data = json.loads(request.httprequest.data)
