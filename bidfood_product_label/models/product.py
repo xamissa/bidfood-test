@@ -14,13 +14,16 @@ class Productemplate(models.Model):
         for rec in self:
             currency = rec.currency_id
             amt = 0
-            res = rec.taxes_id.compute_all(rec.list_price, product=self, partner=self.env['res.partner'])
-            included = res['total_included']
-            if currency.compare_amounts(included, rec.list_price):
-                amt = format_amount(self.env, included, currency)
-            excluded = res['total_excluded']
-            if currency.compare_amounts(excluded, rec.list_price):
-                amt = format_amount(self.env, excluded, currency)
+            if rec.taxes_id:
+                res = rec.taxes_id.compute_all(rec.list_price, product=self, partner=self.env['res.partner'])
+                included = res['total_included']
+                if currency.compare_amounts(included, rec.list_price):
+                    amt = format_amount(self.env, included, currency)
+                excluded = res['total_excluded']
+                if currency.compare_amounts(excluded, rec.list_price):
+                    amt = format_amount(self.env, excluded, currency)
+            else:
+                amt = rec.list_price
             return amt
 
     @api.depends('taxes_id', 'list_price')
@@ -28,16 +31,18 @@ class Productemplate(models.Model):
         for rec in self:
             currency = rec.currency_id
             amt = 0
-            res = rec.taxes_id.compute_all(rec.list_price, product=self, partner=self.env['res.partner'])
-            included = res['total_included']
-            if currency.compare_amounts(included, rec.list_price):
-                amt = format_amount(self.env, included, currency)
-            excluded = res['total_excluded']
-            if currency.compare_amounts(excluded, rec.list_price):
-                amt = format_amount(self.env, excluded, currency)
-
-            trim = re.compile(r'[^\d.,]+')
-            amt = trim.sub('', amt)
+            if rec.taxes_id:
+                res = rec.taxes_id.compute_all(rec.list_price, product=self, partner=self.env['res.partner'])
+                included = res['total_included']
+                if currency.compare_amounts(included, rec.list_price):
+                    amt = format_amount(self.env, included, currency)
+                excluded = res['total_excluded']
+                if currency.compare_amounts(excluded, rec.list_price):
+                    amt = format_amount(self.env, excluded, currency)
+                trim = re.compile(r'[^\d.,]+')
+                amt = trim.sub('', amt)
+            else:
+                amt = rec.list_price
             return float(amt)
 
 class ProductProduct(models.Model):
@@ -48,13 +53,16 @@ class ProductProduct(models.Model):
         for rec in self:
             currency = rec.currency_id
             amt = 0
-            res = rec.taxes_id.compute_all(rec.lst_price, product=self, partner=self.env['res.partner'])
-            included = res['total_included']
-            if currency.compare_amounts(included, rec.lst_price):
-                amt = format_amount(self.env, included, currency)
-            excluded = res['total_excluded']
-            if currency.compare_amounts(excluded, rec.lst_price):
-                amt = format_amount(self.env, excluded, currency)
+            if rec.taxes_id:
+                res = rec.taxes_id.compute_all(rec.lst_price, product=self, partner=self.env['res.partner'])
+                included = res['total_included']
+                if currency.compare_amounts(included, rec.lst_price):
+                    amt = format_amount(self.env, included, currency)
+                excluded = res['total_excluded']
+                if currency.compare_amounts(excluded, rec.lst_price):
+                    amt = format_amount(self.env, excluded, currency)
+            else:
+                amt = rec.list_price
             return amt
 
     @api.depends('lst_price', 'taxes_id')
@@ -62,14 +70,16 @@ class ProductProduct(models.Model):
         for rec in self:
             currency = rec.currency_id
             amt = 0
-            res = rec.taxes_id.compute_all(rec.lst_price, product=self, partner=self.env['res.partner'])
-            included = res['total_included']
-            if currency.compare_amounts(included, rec.lst_price):
-                amt = format_amount(self.env, included, currency)
-            excluded = res['total_excluded']
-            if currency.compare_amounts(excluded, rec.lst_price):
-                amt = format_amount(self.env, excluded, currency)
-
-            trim = re.compile(r'[^\d.,]+')
-            amt = trim.sub('', amt)
+            if rec.taxes_id:
+                res = rec.taxes_id.compute_all(rec.lst_price, product=self, partner=self.env['res.partner'])
+                included = res['total_included']
+                if currency.compare_amounts(included, rec.lst_price):
+                    amt = format_amount(self.env, included, currency)
+                excluded = res['total_excluded']
+                if currency.compare_amounts(excluded, rec.lst_price):
+                    amt = format_amount(self.env, excluded, currency)
+                trim = re.compile(r'[^\d.,]+')
+                amt = trim.sub('', amt)
+            else:
+                amt = rec.list_price
             return float(amt)
