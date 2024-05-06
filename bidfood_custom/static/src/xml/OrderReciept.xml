@@ -41,6 +41,9 @@
                         ,<t t-esc="receipt.company.zip" />.
                 </t>
             </div>
+            <div>
+                <t t-if="receipt.company.name == 'Gqeberha'">Bidfood(Pty) Ltd</t>
+            </div>
             <br/>
         </xpath>
 
