@@ -16,14 +16,45 @@ odoo.define('bi_pos_weight_barcode.BiScaleScreen', function(require) {
 			useExternalListener(document, 'keyup', this._onHotkeys);
 			this.state = useState({ weight: 0 });
 		}
+        
 		mounted() {
-			// start the scale reading
-			this._readScale();
-		}
+                this.iot_box = _.find(this.env.pos.proxy.iot_boxes, iot_box => {
+                    return iot_box.ip == this.scale._iot_ip;
+                });
+                this._error = false;
+                this.env.pos.proxy.on('change:status', this, async (eh, status) => {
+                    if (
+                        !this.iot_box.connected ||
+                        !status.newValue.drivers.scale ||
+                        status.newValue.drivers.scale.status !== 'connected'
+                    ) {
+                        if (!this._error) {
+                            this._error = true;
+                            await Gui.showPopup('ErrorPopup', {
+                                title: this.env._t('Could not connect to IoT scale'),
+                                body: this.env._t(
+                                    'The IoT scale is not responding. You should check your connection.'
+                                ),
+                            });
+                        }
+                    } else {
+                        this._error = false;
+                    }
+                });
+                if (!this.isManualMeasurement) {
+                    this.env.pos.proxy_queue.schedule(() =>
+                        this.scale.action({ action: 'start_reading' })
+                    );
+                }
+                this._readScale();
+            }
 		willUnmount() {
-			// stop the scale reading
-			this.env.pos.proxy_queue.clear();
-		}
+            super.willUnmount();
+            this.env.pos.proxy_queue.schedule(() =>
+                this.scale.action({ action: 'stop_reading' })
+            );
+            if (this.scale) this.scale.remove_listener();
+        }
 		back() {
 			this.props.resolve({ confirmed: false, payload: null });
 			this.trigger('close-temp-screen');
@@ -42,12 +73,25 @@ odoo.define('bi_pos_weight_barcode.BiScaleScreen', function(require) {
 				this.confirm();
 			}
 		}
+        measureWeight() {
+            this.env.pos.proxy_queue.schedule(() => this.scale.action({ action: 'read_once' }));
+        }
 		_readScale() {
-			this.env.pos.proxy_queue.schedule(this._setWeight.bind(this), {
-				duration: 500,
-				repeat: true,
-			});
-		}
+            this.env.pos.proxy_queue.schedule(async () => {
+                await this.scale.add_listener(this._onValueChange.bind(this));
+                await this.scale.action({ action: 'read_once' });
+            });
+        }
+        async _onValueChange(data) {
+            if (data.status.status === 'error') {
+                await Gui.showPopup('ErrorTracebackPopup', {
+                    title: data.status.message_title,
+                    body: data.status.message_body,
+                });
+            } else {
+                this.state.weight = data.value;
+            }
+        }
 		async _setWeight() {
 			const reading = await this.env.pos.proxy.scale_read();
 			this.state.weight = reading.weight;
@@ -93,6 +137,12 @@ odoo.define('bi_pos_weight_barcode.BiScaleScreen', function(require) {
 				? this.env.pos.units_by_id[this.props.product.uom_id[0]].name
 				: '';
 		}
+        get scale() {
+                return this.env.pos.iot_device_proxies.scale;
+        }
+        get isManualMeasurement() {
+            return this.scale && this.scale.manual_measurement;
+        }
 
 		async createBarcode(event){
 			let self = this;
@@ -120,7 +170,6 @@ odoo.define('bi_pos_weight_barcode.BiScaleScreen', function(require) {
 				barcode = prefix.toString() + temp.toString();
 
 
-				console.log("barcode===============",barcode)
 			}
 			self.showTempScreen('WBReceiptScreen',{
 				barcode : barcode,
