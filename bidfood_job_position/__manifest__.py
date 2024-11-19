@@ -12,6 +12,7 @@
         'point_of_sale.assets': [
             'bidfood_job_position/static/src/js/models.js',
             'bidfood_job_position/static/src/js/ClientDetailsEdit.js',
+            'bidfood_job_position/static/src/js/PaymentScreen.js',
         ],
         'web.assets_qweb': [
             'bidfood_job_position/static/src/xml/*',

@@ -4,6 +4,7 @@ odoo.define('bidfood_job_position.PosCustomerInherit', function (require) {
     const models = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
     const ClientDetailsEdit = require('point_of_sale.ClientDetailsEdit');
+    const { _t } = require('web.core');
 
     models.load_fields('res.partner', ['function']);
 
@@ -12,7 +13,6 @@ odoo.define('bidfood_job_position.PosCustomerInherit', function (require) {
             constructor() {
                 super(...arguments);
                 const partner = this.props.partner;
-                console.log("222222222222222",partner)
                 this.changes.job_position = partner.function || '';
             }
             saveChanges() {
@@ -30,7 +30,18 @@ odoo.define('bidfood_job_position.PosCustomerInherit', function (require) {
                       title: _t('A Customer Name Is Required'),
                     });
                 }
-                console.log("0-----------------",processedChanges)
+                if ((!this.props.partner.email && !processedChanges.email) ||
+                    processedChanges.email === '' ){
+                    return this.showPopup('ErrorPopup', {
+                      title: _t('A Customer Email Is Required'),
+                    });
+                }
+                if ((!this.props.partner.phone && !processedChanges.phone) ||
+                    processedChanges.phone === '' ){
+                    return this.showPopup('ErrorPopup', {
+                      title: _t('A Customer Phone Number Is Required'),
+                    });
+                }
                 processedChanges.function = processedChanges.job_position || '';
                 delete processedChanges.job_position;
                 processedChanges.id = this.props.partner.id || false;
