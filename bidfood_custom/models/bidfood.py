@@ -103,12 +103,12 @@ class bidfood_sale(models.Model):
     password = fields.Char(string='Password', copy=False)
     token = fields.Char(string='Token', copy=False, readonly=True)
     url = fields.Char(string='URL', copy=False,
-                      default='https://pos.bidfood.co.za/api/Product/authentication'
+                      default='https://postest.bidfood.co.za/api/Product/authenticationtest'
                       )
 
     def bidfood_token(self):
         headers = {'Content-Type': 'application/json'}
-        url='https://pos.bidfood.co.za/api/Product/authentication'
+        url='https://postest.bidfood.co.za/api/Product/authenticationtest'
         payload = json.dumps({'userName': self.name,
                              'password': self.password})
         resp = requests.post(url, headers=headers, data=payload)
@@ -123,7 +123,7 @@ class bidfood_sale(models.Model):
 
     def bidfood_product(self):
         payload = {}
-        url = 'https://pos.bidfood.co.za/api/Product'
+        url = 'https://postest.bidfood.co.za/api/Producttest'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token}
         resp = requests.request('GET', url, headers=headers,
@@ -357,6 +357,7 @@ class bidfood_sale(models.Model):
             pos_pay = self.env['pos.payment']
             payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
             paymentType=''
+            TRDISAMT=0.0
             if pos.refunded_order_ids:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
                 paymentLines=[]
@@ -399,14 +400,18 @@ class bidfood_sale(models.Model):
                         }
                 order_line = []
                 for line in pos.lines:
-                    line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
+                    if not line.is_program_reward:
+                        line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
                                  'itemDescription': line.product_id.name,
                                  'quantity': abs(line.qty),
                                  'price': round(line.price_unit, 2),
                                   'uom':line.product_id.gp_unit,
                                  'lineTotal': abs(line.price_subtotal_incl)
                                  }
+                    if line.is_program_reward: 
+                        TRDISAMT=line.price_subtotal_incl
                     order_line.append(line_dict)
+                data['TRDISAMT']=TRDISAMT
                 data['invoiceLines']=order_line
             else:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
@@ -449,21 +454,25 @@ class bidfood_sale(models.Model):
                         'TAXAMNT':pos.amount_tax,}
                 order_line = []
                 for line in pos.lines:
-                    line_dict = {'itemCode': (line.product_id.default_code).strip(),
+                    if not line.is_program_reward:
+                        line_dict = {'itemCode': (line.product_id.default_code).strip(),
                                  'itemDescription': line.product_id.name,
                                  'quantity': line.qty,
                                   'uom':line.product_id.gp_unit,
                                    'lineTotal': line.price_subtotal_incl,
                                  'price': round(line.price_unit, 2)}
+                    if line.is_program_reward: 
+                        TRDISAMT=line.price_subtotal_incl
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
+                data['TRDISAMT']=TRDISAMT
             #data_push.append(data)
             data_push = json.dumps(data)
             self.bidfood_send(data_push)
         return True
     def bidfood_send(self, payload):
         product_big = self.env['product.big'].create({'name': 'Test'})
-        url = 'https://pos.bidfood.co.za/api/Invoice'
+        url = 'https://postest.bidfood.co.zatest/api/Invoice'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'
 }
@@ -471,6 +480,7 @@ class bidfood_sale(models.Model):
         response = requests.request("POST", url, headers=headers, data=payload)
         res = response.json()
         product_log = self.env['product.big.log']
+        
         if res.get('response') == 'Success':
              log_book_id = product_log.create({
                         'product_big': product_big.id,
