@@ -352,6 +352,7 @@ class bidfood_sale(models.Model):
     def bidfood_sale_order(self, orders):
         data_push = ''
         con=''
+        TRDISAMT=0.0
         for pos in orders:
             data={}
             pos_pay = self.env['pos.payment']
@@ -399,15 +400,19 @@ class bidfood_sale(models.Model):
                         }
                 order_line = []
                 for line in pos.lines:
-                    line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
+                    if not  line.is_program_reward: 
+                        line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
                                  'itemDescription': line.product_id.name,
                                  'quantity': abs(line.qty),
                                  'price': round(line.price_unit, 2),
                                   'uom':line.product_id.gp_unit,
                                  'lineTotal': abs(line.price_subtotal_incl)
                                  }
+                    if line.is_program_reward: 
+                        TRDISAMT=abs(line.price_subtotal_incl)
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
+                data['TRDISAMT']=TRDISAMT
             else:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('session_id','=',pos.session_id.id),('amount','!=',0.0)])
                 paymentLines=[]
@@ -449,15 +454,19 @@ class bidfood_sale(models.Model):
                         'TAXAMNT':pos.amount_tax,}
                 order_line = []
                 for line in pos.lines:
-                    line_dict = {'itemCode': (line.product_id.default_code).strip(),
+                    if not line.is_program_reward:
+                        line_dict = {'itemCode': (line.product_id.default_code).strip(),
                                  'itemDescription': line.product_id.name,
                                  'quantity': line.qty,
                                   'uom':line.product_id.gp_unit,
                                    'lineTotal': line.price_subtotal_incl,
                                  'price': round(line.price_unit, 2)}
+                    if line.is_program_reward: 
+                        TRDISAMT=abs(line.price_subtotal_incl)
                     order_line.append(line_dict)
                 data['invoiceLines']=order_line
             #data_push.append(data)
+            data['TRDISAMT']=TRDISAMT
             data_push = json.dumps(data)
             self.bidfood_send(data_push)
         return True
