@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ClientDetailsEdit" t-inherit="point_of_sale.ClientDetailsEdit" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('client-details-left')]" position="inside">
+            <div class="client-detail">
+                <span class="label">Job Position</span>
+                <select class="detail" name="job_position" t-model="changes.job_position" t-on-change="captureChange">
+                    <option value="">None</option>
+                    <t t-foreach="env.pos.job_position" t-as="job" t-key="job.id">
+                        <option t-att-value="job.name">
+                            <t t-esc="job.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+    </t>
+
+ </templates>

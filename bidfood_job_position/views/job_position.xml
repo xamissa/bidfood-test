@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="erpweb_job_position_tree" model="ir.ui.view">
+        <field name="name">erpweb job.position.tree</field>
+        <field name="model">erpweb.job.position</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_erpweb_job_position_form" model="ir.actions.act_window">
+        <field name="name">Type of Job Position</field>
+        <field name="res_model">erpweb.job.position</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="erpweb_job_position_details" name="Job Position" parent="contacts.menu_localisation" sequence="4" action="action_erpweb_job_position_form"/>
+</odoo>
