@@ -366,6 +366,7 @@ class bidfood_sale(models.Model):
                 cash=0.0
                 paymentTypecard=''
                 card=0.0
+                TRDISAMT=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
                        cash=i.amount+cash
@@ -408,9 +409,9 @@ class bidfood_sale(models.Model):
                                   'uom':line.product_id.gp_unit,
                                  'lineTotal': abs(line.price_subtotal_incl)
                                  }
+                        order_line.append(line_dict)
                     if line.is_program_reward: 
-                        TRDISAMT=abs(line.price_subtotal_incl)
-                    order_line.append(line_dict)
+                        TRDISAMT=TRDISAMT+abs(line.price_subtotal_incl)
                 data['invoiceLines']=order_line
                 data['TRDISAMT']=TRDISAMT
             else:
@@ -421,6 +422,7 @@ class bidfood_sale(models.Model):
                 cash=0.0
                 paymentTypecard=''
                 card=0.0
+                TRDISAMT=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
                        cash=i.amount+cash
@@ -461,9 +463,9 @@ class bidfood_sale(models.Model):
                                   'uom':line.product_id.gp_unit,
                                    'lineTotal': line.price_subtotal_incl,
                                  'price': round(line.price_unit, 2)}
+                        order_line.append(line_dict)
                     if line.is_program_reward: 
-                        TRDISAMT=abs(line.price_subtotal_incl)
-                    order_line.append(line_dict)
+                        TRDISAMT=TRDISAMT+abs(line.price_subtotal_incl)
                 data['invoiceLines']=order_line
             #data_push.append(data)
             data['TRDISAMT']=TRDISAMT
