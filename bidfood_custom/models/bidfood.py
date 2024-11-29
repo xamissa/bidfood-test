@@ -411,7 +411,7 @@ class bidfood_sale(models.Model):
                                  }
                         order_line.append(line_dict)
                     if line.is_program_reward: 
-                        TRDISAMT=TRDISAMT+abs(line.price_subtotal_incl)
+                        TRDISAMT=TRDISAMT+abs(line.price_subtotal)
                 data['invoiceLines']=order_line
                 data['TRDISAMT']=TRDISAMT
             else:
@@ -465,7 +465,7 @@ class bidfood_sale(models.Model):
                                  'price': round(line.price_unit, 2)}
                         order_line.append(line_dict)
                     if line.is_program_reward: 
-                        TRDISAMT=TRDISAMT+abs(line.price_subtotal_incl)
+                        TRDISAMT=TRDISAMT+abs(line.price_subtotal)
                 data['invoiceLines']=order_line
             #data_push.append(data)
             data['TRDISAMT']=TRDISAMT
