@@ -321,10 +321,10 @@ class bidfood_sale(models.Model):
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
                 val.update({'taxes_id':[(6,0,[tax])]})
 
-            if r['unit_of_measure'] and product.uom_id.name!=r['unit_of_measure']:
+            """if r['unit_of_measure'] and product.uom_id.name!=r['unit_of_measure']:
                uom_id=uom_obj.search([('name','=',r['unit_of_measure'])],limit=1)
-               if uom_id:
-                  val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
+               #if uom_id:
+                  #val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})"""
 
             try:
                 if val:
