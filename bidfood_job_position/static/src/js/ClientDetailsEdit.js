@@ -6,7 +6,7 @@ odoo.define('bidfood_job_position.PosCustomerInherit', function (require) {
     const ClientDetailsEdit = require('point_of_sale.ClientDetailsEdit');
     const { _t } = require('web.core');
 
-    models.load_fields('res.partner', ['function']);
+    models.load_fields('res.partner', ['function','city']);
 
     const PosPartnerDetailsEditInherit = (ClientDetailsEdit) =>
         class extends ClientDetailsEdit {
@@ -17,6 +17,7 @@ odoo.define('bidfood_job_position.PosCustomerInherit', function (require) {
                 if (!partner.city)
                     partner.city = comp[1];
                 this.changes.job_position = partner.function || '';
+                this.changes.city = partner.city || '';
             }
             saveChanges() {
                 let processedChanges = {};
@@ -46,6 +47,7 @@ odoo.define('bidfood_job_position.PosCustomerInherit', function (require) {
                     });
                 }
                 processedChanges.function = processedChanges.job_position || '';
+                processedChanges.city = processedChanges.city || '';
                 delete processedChanges.job_position;
                 processedChanges.id = this.props.partner.id || false;
                 this.trigger('save-changes', { processedChanges });
