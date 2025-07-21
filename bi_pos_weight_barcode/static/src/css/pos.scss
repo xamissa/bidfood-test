@@ -1,0 +1,164 @@
+.create-weight-barcode {
+    text-align: center;
+    font-size: 32px;
+    background: rgb(110, 200, 155);
+    color: white;
+    border-radius: 3px;
+    padding: 16px;
+    margin: 16px;
+    cursor: pointer;
+  }
+  
+  .custom-pos-receipt-print {
+    width: 512px;
+    font-size: 27px;
+    color: #000000;
+  }
+  
+  .custom-pos-receipt {
+    &-right-align {
+      float: right;
+      display: flex;
+    }
+  
+    &-center-align {
+      text-align: center;
+    }
+  
+    &-left-padding {
+      padding-left: 2em;
+    }
+  
+    &-logo {
+      width: 50%;
+      display: block;
+      margin: 0 auto;
+    }
+  
+    &-contact {
+      text-align: center;
+      font-size: 75%;
+    }
+  
+    &-order-data {
+      text-align: center;
+      font-size: 75%;
+    }
+  
+    &-amount {
+      font-size: 125%;
+      padding-left: 6em;
+    }
+  
+    &-title {
+      font-weight: bold;
+      font-size: 125%;
+      text-align: center;
+    }
+  
+    &-header {
+      font-size: 125%;
+      text-align: center;
+    }
+  
+    &-receipt-cancel {
+      color: red;
+    }
+  
+    &-customer-note {
+      word-break: break-all;
+    }
+  
+    &-taxes {
+      display: grid;
+      grid-template-columns: min-content min-content auto auto auto;
+      width: 100%;
+      justify-items: end;
+    }
+  }
+  
+  .pos-payment-terminal-receipt {
+    text-align: center;
+    font-size: 75%;
+  
+    pre {
+      font-family: inherit;
+    }
+  }
+  
+  .responsive-price {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  
+    > .custom-pos-receipt-right-align {
+      margin-left: auto;
+    }
+  }
+  
+  .custom-centered-content {
+    border-right: solid 1px #C9CCD2;
+    border-left: solid 1px #C9CCD2;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-width: 512px;
+    margin-left: 600px;
+  }
+  
+  .compute-price {
+    font-size: 25px;
+    display: inline-block;
+    text-align: right;
+    margin: 16px;
+    margin-top: 0;
+    padding: 16px;
+    background: white;
+    width: 35%;
+    border-radius: 3px;
+    font-family: Inconsolata;
+    font-weight: bold;
+    text-shadow: 0px 2px 0px #d2d2d2;
+    box-shadow: 0px 2px 0px #e1e1e1 inset;
+    float: right;
+  }
+  
+  .buying-product {
+    font-size: 32px;
+    background: #017e84;
+    color: white;
+    border-radius: 3px;
+    padding: 16px;
+    margin: 16px;
+    cursor: pointer;
+  }
+  
+  .products-price {
+    font-size: 25px;
+    margin: 16px;
+    text-align: center;
+    display: inline-block;
+    width: 35%;
+  }
+  
+  .weight-js-weight {
+    text-align: right;
+    margin: 16px;
+    background: white;
+    padding: 20px;
+    padding-right: 30px;
+    font-size: 56px;
+    border-radius: 3px;
+    font-family: Inconsolata;
+    text-shadow: 0px 2px 0px #d2d2d2;
+    box-shadow: 0px 2px 0px;
+  }
+  
+  .custom-top-content {
+    height: 64px;
+    border-bottom: solid 1px #C9CCD2;
+    text-align: center;
+    display: flex;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  

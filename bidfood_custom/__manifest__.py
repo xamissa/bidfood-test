@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'BidFood',
-    'version': '1.0 ',
+    'version': '18.0',
     'category': 'Sales',
     'sequence': 6,
     'summary': 'Integrate your Odoo with an Bidfood',
@@ -16,15 +16,11 @@
     ],
      'assets': {
 
-        'point_of_sale.assets': [
-             'bidfood_custom/static/src/js/models.js',
-             'bidfood_custom/static/src/js/product.js',
+        'point_of_sale._assets_pos': [
+             'bidfood_custom/static/src/**/*',
             ],
-        'web.assets_qweb': [
-           'bidfood_custom/static/src/xml/**/*',
-        ],
     },
-    'depends': ['point_of_sale'],
+    'depends': ['point_of_sale','utm'],
     'qweb': [''],
     'installable': True,
     'license': 'LGPL-3',

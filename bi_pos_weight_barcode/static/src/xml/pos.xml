@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templates id="pos_orders_reprint_template" inherit_id="point_of_sale.template" xml:space="preserve">
+<templates id="bi_pos_weight_barcode_template" inherit_id="point_of_sale.template" xml:space="preserve">
 
-	<t t-name="BiScaleScreen" owl="1">
+	<t t-name="bi_pos_weight_barcode.BiScaleScreen" owl="1">
 		<div class="scale-screen screen">
 			<div class="screen-content">
-				<div class="top-content">
-					<span class="button back" t-on-click="back">
+				<div class="custom-top-content" style="border: 1px solid;">
+					<button class="button back highlight btn btn-lg btn-primary" t-on-click="back" style="padding-right: 10px;">
 						<i class="fa fa-angle-double-left"></i>
 						Back
-					</span>
-					<h1 class="product-name">
+					</button>
+					<h1 class="product-name" style="padding-left: 10px;">
 						<t t-esc="productName" />
 					</h1>
 				</div>
-				<div class="centered-content">
-					<div class="weight js-weight">
+				<div class="custom-centered-content">
+					<div class="weight-js-weight">
 						<t t-esc="productWeightString" />
 					</div>
-					<div class="product-price">
-						<t t-esc="env.pos.format_currency(productPrice) + '/' + productUom" />
+					<div class="products-price">
+						<t t-esc="env.utils.formatCurrency(productPrice) + '/' + productUom" />
 					</div>
-					<div class="computed-price">
+					<div class="compute-price">
 						<t t-esc="computedPriceString" />
 					</div>
-					<div class="create-weight-barcode" t-on-click="createBarcode">
+					<div class="buying-product" t-on-click="createBarcode" style="cursor: pointer;">
 						Barcode
 						<i class="fa fa-angle-double-right"></i>
 					</div>
@@ -31,69 +31,99 @@
 			</div>
 		</div>
 	</t>
+	
 
-	<t t-name="BiProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension" owl="1">
-		<xpath expr="//div[hasclass('leftpane')]" position="attributes">
-			<attribute name="t-att-style"> env.pos.config.is_weight_scale_screen ?  'display: None;' : ''</attribute>
-		</xpath> 
-	</t>
-
-	<t t-name="WBReceiptScreen" owl="1">
-		<div class="receipt-screen screen">
-			<div class="screen-content">
-				<div class="top-content">
-					<div class="top-content-center">
-						<h1> Product Weight Screen</h1>
+	<t t-name="bi_pos_weight_barcode.WBReceiptScreen" owl="1">
+		<t t-if="pos.config.is_weight_scale_screen">
+			<div class="receipt-screen screen h-100 bg-100">
+				<div class="screen-content d-flex flex-column h-100">
+					<div class="top-content d-flex gap-2 align-items-center p-2 border-bottom text-center">
+						<div class="custom-top-content-center" style="padding-right: 65%; padding-left: 5%;">
+							<h1> Product Weight Screen</h1>
+						</div>
+						<button class="button back btn btn-lg btn-outline-primary" t-on-click="back">
+							<i class="fa fa-angle-double-left me-2"></i>
+							<span>Ok</span>
+						</button>
 					</div>
-					<span class="button next highlight" t-on-click="back">
-						<span>Ok</span>
-						<span> </span>
-						<i class="fa fa-angle-double-right"></i>
-					</span>
-				</div>
-				<div class="centered-content">
-					<div class="button print" t-on-click="printReceipt">
-						<i class="fa fa-print"></i>
-						<span> </span>
-						<span>Print</span>
-					</div>
-					<div class="pos-receipt-container">
-						<WBReceipt 
-							barcode = "props.barcode"
-							product = "props.product"
-							weight = "props.weight"
-							price = "props.price"
-							t-ref="order-receipt"			
-						/>
+					<div class="centered-content mx-auto mt-3 border-start border-end text-center overflow-x-hidden overflow-y-auto">
+						<button class="button print btn btn-lg btn-primary" t-on-click="printReceipt">
+							<i class="fa fa-print ms-2" t-ref="order-print-receipt-button"></i> Print
+						</button>
+						<div class="pos-receipt-container text-center">
+							<div class="d-inline-block m-3 p-3 border rounded bg-view text-start overflow-hidden">
+								<WBReceipt
+									barcode = "props.barcode"
+									product = "props.product"
+									weight = "props.weight"
+									price = "props.price" />
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</t>
+		<t t-else="">
+
+
+		</t>
 	</t>
 
-	<t t-name="WBReceipt" owl="1">
-		<div class="pos-receipt">
+	<t t-name="bi_pos_weight_barcode.BiProductScreen" t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension" owl="1">
+		<xpath expr="//div[hasclass('leftpane')]" position="replace">
+			<t t-if="pos.config.is_weight_scale_screen">
+
+			</t>
+			<t t-else="">
+				<div t-att-class="{'flex-grow-1 w-100 mw-100': ui.isSmall, 'd-none': ui.isSmall and pos.mobile_pane !== 'left'}" class="leftpane d-flex flex-column p-2">
+					<OrderSummary />
+					<div class="pads">
+						<div t-attf-class="control-buttons d-flex justify-content-between gap-2 w-100 py-2">
+							<ControlButtons t-if="!ui.isSmall" onClickMore.bind="displayAllControlPopup"/>
+						</div>
+						<div class="subpads d-flex flex-column gap-2">
+							<Numpad t-if="!currentOrder?.is_empty() and pos.get_order()?.uiState.selected_orderline_uuid" class="'d-grid m-n1'" buttons="getNumpadButtons()" onClick.bind="onNumpadClick"/>
+							<ActionpadWidget partner="currentOrder?.get_partner()" onClickMore.bind="displayAllControlPopup" actionName.translate="Payment" actionToTrigger="() => pos.pay()" showActionButton="!currentOrder?.is_empty()" />
+						</div>
+					</div>
+				</div>
+			</t>
+		</xpath>
+	</t>
+
+	<t t-name="bi_pos_weight_barcode.WBReceipt" owl="1">
+		<div class="pos-receipt" style="text-align: left;
+										width: 300px;
+										background-color: white;
+										margin: 20px;
+										padding: 15px;
+										padding-bottom: 30px;
+										display: inline-block;
+										border: solid 1px gainsboro;
+										border-radius: 3px;
+										overflow: hidden;">
 			<div style="font-size: 16px;font-weight: bold;">
-				<div style="text-align:center;"><span t-esc="todaydate"/></div>
-				<span style="display:none;" t-esc="receiptBarcode"/>
-				<div id="barcode_print1" class="pos-receipt-contact">
-                    <img width="200" height="100" t-att-src="receiptBarcode" />
-                </div>
-				<div style="text-align:center;font-size: 14px;padding: 5px;"><span t-esc="product"/></div>
+				<div style="text-align:center;">
+					<span t-esc="todaydate"/>
+				</div>
+				<span></span>
+				<img id="barcode" style="margin:auto;margin-top:10px;padding-left: 49px;">
+				</img>
+				<div style="text-align:center;font-size: 14px;padding: 5px;">
+					<span t-esc="product"/>
+				</div>
 				<div style="width: 100%;display: flex;">
-					<div style="width:50%;"> 
+					<div style="width:50%;">
 						<span t-esc="weight"/>
 					</div>
-					<div style="width:50%;text-align:right;"> 
+					<div style="width:50%;text-align:right;">
 						<span t-esc="price"/>
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
 	</t>
 
 
 </templates>
-
-
