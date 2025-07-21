@@ -26,6 +26,21 @@ class res_company(models.Model):
     branch = fields.Char(string="Branch")
     siteid = fields.Char(string="SiteID")
 
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+       data = super()._load_pos_data_fields(config_id)
+       data += ['street2','branch']
+       return data
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+       data = super()._load_pos_data_fields(config_id)
+       data += ['street2']
+       return data
+
 class Productemplate(models.Model):
 
     _inherit = 'product.template'
@@ -35,12 +50,30 @@ class Productemplate(models.Model):
     branch = fields.Char(string="Branch")
     siteid = fields.Char(string="SiteID")
 
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+       data = super()._load_pos_data_fields(config_id)
+       data += ['branch']
+       return data
+
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     branch = fields.Char(string="Branch", related="product_tmpl_id.branch")
     siteid = fields.Char(string="SiteID", related="product_tmpl_id.siteid")
     _sql_constraints = [('barcode_uniq', 'check(1=1)', 'No error'),]
+
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+       data = super()._load_pos_data_fields(config_id)
+       data += ['branch','siteid']
+       return data
+
+    def _load_pos_data_domain(self, data):
+        result = super()._load_pos_data_domain(data)
+        config_id = self.env['pos.config'].browse(data['pos.config']['data'][0]['id'])
+        result.append(('branch', '=', config.branch),('siteid','=',config_id.site_id))
+        return result
 
 class PosOrder(models.Model):
 
@@ -103,12 +136,12 @@ class bidfood_sale(models.Model):
     password = fields.Char(string='Password', copy=False)
     token = fields.Char(string='Token', copy=False, readonly=True)
     url = fields.Char(string='URL', copy=False,
-                      default='https://pos.bidfood.co.za/api/Product/authentication'
+                      default='https://postest.bidfood.co.za/api/Product/authentication'
                       )
 
     def bidfood_token(self):
         headers = {'Content-Type': 'application/json'}
-        url='https://pos.bidfood.co.za/api/Product/authentication'
+        url='https://postest.bidfood.co.za/api/Product/authentication'
         payload = json.dumps({'userName': self.name,
                              'password': self.password})
         resp = requests.post(url, headers=headers, data=payload)
@@ -123,7 +156,7 @@ class bidfood_sale(models.Model):
 
     def bidfood_product(self):
         payload = {}
-        url = 'https://pos.bidfood.co.za/api/Product'
+        url = 'https://postest.bidfood.co.za/api/Product'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token}
         resp = requests.request('GET', url, headers=headers,
@@ -321,10 +354,10 @@ class bidfood_sale(models.Model):
             if r['customer_taxes'] == 'OUTPUTVAT - 15%':
                 val.update({'taxes_id':[(6,0,[tax])]})
 
-            """if r['unit_of_measure'] and product.uom_id.name!=r['unit_of_measure']:
+            if r['unit_of_measure'] :
                uom_id=uom_obj.search([('name','=',r['unit_of_measure'])],limit=1)
-               #if uom_id:
-                  #val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})"""
+               if uom_id:
+                  val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
 
             try:
                 if val:
@@ -358,7 +391,7 @@ class bidfood_sale(models.Model):
             pos_pay = self.env['pos.payment']
             payment_id=pos_pay.search([('pos_order_id','=',pos.id)])
             paymentType=''
-            if pos.refunded_order_ids:
+            if pos.refunded_order_id:
                 payment_id=pos_pay.search([('pos_order_id','=',pos.id),('amount','!=',0.0),('name','=','return'),('session_id','=',pos.session_id.id)])
                 paymentLines=[]
                 amount=0.0
@@ -366,7 +399,6 @@ class bidfood_sale(models.Model):
                 cash=0.0
                 paymentTypecard=''
                 card=0.0
-                TRDISAMT=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
                        cash=i.amount+cash
@@ -401,17 +433,17 @@ class bidfood_sale(models.Model):
                         }
                 order_line = []
                 for line in pos.lines:
-                    if not  line.is_program_reward: 
-                        line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
-                                 'itemDescription': line.product_id.name,
-                                 'quantity': abs(line.qty),
-                                 'price': round(line.price_unit, 2),
-                                  'uom':line.product_id.gp_unit,
-                                 'lineTotal': abs(line.price_subtotal_incl)
-                                 }
-                        order_line.append(line_dict)
-                    if line.is_program_reward: 
-                        TRDISAMT=TRDISAMT+abs(line.price_subtotal)
+                    # if not  line.is_program_reward: 
+                    line_dict = {'itemCode': (line.product_id.default_code).strip() if line.product_id.default_code else '',
+                             'itemDescription': line.product_id.name,
+                             'quantity': abs(line.qty),
+                             'price': round(line.price_unit, 2),
+                              'uom':line.product_id.gp_unit,
+                             'lineTotal': abs(line.price_subtotal_incl)
+                             }
+                    # if line.is_program_reward: 
+                    #     TRDISAMT=abs(line.price_subtotal_incl)
+                    order_line.append(line_dict)
                 data['invoiceLines']=order_line
                 data['TRDISAMT']=TRDISAMT
             else:
@@ -422,7 +454,6 @@ class bidfood_sale(models.Model):
                 cash=0.0
                 paymentTypecard=''
                 card=0.0
-                TRDISAMT=0.0
                 for i in payment_id:
                     if i.payment_method_id.name=='Cash Payment':
                        cash=i.amount+cash
@@ -456,16 +487,16 @@ class bidfood_sale(models.Model):
                         'TAXAMNT':pos.amount_tax,}
                 order_line = []
                 for line in pos.lines:
-                    if not line.is_program_reward:
-                        line_dict = {'itemCode': (line.product_id.default_code).strip(),
-                                 'itemDescription': line.product_id.name,
-                                 'quantity': line.qty,
-                                  'uom':line.product_id.gp_unit,
-                                   'lineTotal': line.price_subtotal_incl,
-                                 'price': round(line.price_unit, 2)}
-                        order_line.append(line_dict)
-                    if line.is_program_reward: 
-                        TRDISAMT=TRDISAMT+abs(line.price_subtotal)
+                    # if not line.is_program_reward:
+                    line_dict = {'itemCode': (line.product_id.default_code).strip(),
+                             'itemDescription': line.product_id.name,
+                             'quantity': line.qty,
+                              'uom':line.product_id.gp_unit,
+                               'lineTotal': line.price_subtotal_incl,
+                             'price': round(line.price_unit, 2)}
+                    # if line.is_program_reward: 
+                    #     TRDISAMT=abs(line.price_subtotal_incl)
+                    order_line.append(line_dict)
                 data['invoiceLines']=order_line
             #data_push.append(data)
             data['TRDISAMT']=TRDISAMT
@@ -474,7 +505,7 @@ class bidfood_sale(models.Model):
         return True
     def bidfood_send(self, payload):
         product_big = self.env['product.big'].create({'name': 'Test'})
-        url = 'https://pos.bidfood.co.za/api/Invoice'
+        url = 'https://postest.bidfood.co.za/api/Invoice'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'
 }

@@ -30,15 +30,15 @@
          <field name="name">bidfood.sale.sale.tree</field>
          <field name="model">bidfood.sale</field>
          <field name="arch" type="xml">
-            <tree>
+            <list>
                <field name="name" />
-            </tree>
+            </list>
          </field>
       </record>
       <record id="bidfood_sale_action" model="ir.actions.act_window">
          <field name="name">BidFood Sale</field>
          <field name="res_model">bidfood.sale</field>
-         <field name="view_mode">tree,form</field>
+         <field name="view_mode">list,form</field>
          <field name="view_id" ref="bidfood_sale_tree_view" />
       </record>
         <menuitem id="bidfood_sale_sequence" name="BidFood GP Product" parent="point_of_sale.menu_point_config_product" sequence="15" />
@@ -70,19 +70,19 @@
          <field name="name">product.big.log.tree</field>
          <field name="model">product.big.log</field>
          <field name="arch" type="xml">
-            <tree>
+            <list>
                <field name="name" />
                <field name="payload"/>
                <field name="model"/>
                <field name="error"/>
-            </tree>
+            </list>
          </field>
       </record>
 
       <record id="product_big_log_action" model="ir.actions.act_window">
          <field name="name">BidFood Log</field>
          <field name="res_model">product.big.log</field>
-         <field name="view_mode">tree,form</field>
+         <field name="view_mode">list,form</field>
          <field name="view_id" ref="product_big_log_tree" />
       </record>
 
@@ -98,14 +98,14 @@
                   <notebook>
                      <page string="Logs">
                         <field name="log_ids">
-                           <tree>
+                           <list>
                               <field name="name"/>
                               <field name="payload"/>
                               <field name="model"/>
                               <field name="error"/>
                               <field name="ttype"/>
                               <field name="etype"/>
-                           </tree>
+                           </list>
                         </field>
                      </page>
                   </notebook>
@@ -119,18 +119,18 @@
          <field name="name">product.big.tree</field>
          <field name="model">product.big.log</field>
          <field name="arch" type="xml">
-            <tree create="false">
+            <list create="false">
                <field name="name" />
                <field name="model"/>
                <field name="create_date"/>
-            </tree>
+            </list>
          </field>
       </record>
 
       <record id="product_big_action" model="ir.actions.act_window">
          <field name="name">BidFood Log</field>
          <field name="res_model">product.big</field>
-         <field name="view_mode">tree,form</field>
+         <field name="view_mode">list,form</field>
          <field name="view_id" ref="product_big_tree" />
       </record>
 
