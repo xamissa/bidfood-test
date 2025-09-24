@@ -136,12 +136,12 @@ class bidfood_sale(models.Model):
     password = fields.Char(string='Password', copy=False)
     token = fields.Char(string='Token', copy=False, readonly=True)
     url = fields.Char(string='URL', copy=False,
-                      default='https://postest.bidfood.co.za/api/Product/authentication1'
+                      default='https://postest.bidfood.co.za/api/Product/authentication'
                       )
 
     def bidfood_token(self):
         headers = {'Content-Type': 'application/json'}
-        url='https://postest.bidfood.co.za/api/Product/authentication1'
+        url='https://postest.bidfood.co.za/api/Product/authentication'
         payload = json.dumps({'userName': self.name,
                              'password': self.password})
         resp = requests.post(url, headers=headers, data=payload)
@@ -156,7 +156,7 @@ class bidfood_sale(models.Model):
 
     def bidfood_product(self):
         payload = {}
-        url = 'https://postest.bidfood.co.za/api/Product1'
+        url = 'https://postest.bidfood.co.za/api/Product'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token}
         resp = requests.request('GET', url, headers=headers,
@@ -166,9 +166,11 @@ class bidfood_sale(models.Model):
             create_product = []
             update_product = []
             for r in res:
+                company_id = self.env['res.company'].sudo().search([('branch', '=',
+                    r['branch'])])
                 product = self.env['product.template'
                                    ].sudo().search([('default_code', '=',
-                        r['internal_Reference'].strip()),('siteid','=',r['siteID']),('branch','=',r['branch'])],
+                        r['internal_Reference'].strip()),('siteid','=',r['siteID']),('branch','=',r['branch']),('company_id','=',company_id.id)],
                         order='id desc', limit=1)
                 if not product:
                     create_product.append(r)
@@ -235,11 +237,12 @@ class bidfood_sale(models.Model):
                 'siteid':r['siteID'],
                 'type': 'consu',
                 'to_weight': to_weight,
-                'detailed_type': 'consu',
+                'type': 'consu',
                 'available_in_pos': True,
-                'pos_categ_id': categ_id,
                 'company_id':company_id
                 }
+            if categ_id:
+                val.update({'pos_categ_ids':[(6,0,[categ_id])]})
             if barcode:
                 val.update({'barcode': barcode})
             if r['customer_taxes'] == 'ZEROVAT SALES':
@@ -293,7 +296,7 @@ class bidfood_sale(models.Model):
             val = {}
             barcode = ''
             temp = ''
-            product = self.env['product.template'].browse(r['product_id'
+            product = self.env['product.template'].sudo().browse(r['product_id'
                     ])
             to_weight = False
             if r['barcode'] :
@@ -335,8 +338,8 @@ class bidfood_sale(models.Model):
                 val.update({'list_price': r['sellingPrice']})
             if product.gp_unit != r['unit_of_measure']:
                 val.update({'gp_unit': r['unit_of_measure']})
-            if product.pos_categ_id.id != int(categ_id):
-                val.update({'pos_categ_id': int(categ_id)})
+            if categ_id in product.pos_categ_ids.ids:
+                val.update({'pos_categ_ids':[(6,0,[categ_id])]})
             if product.available_in_pos != True:
                 val.update({'available_in_pos': True})
             if product.branch != r['branch']:
@@ -358,7 +361,8 @@ class bidfood_sale(models.Model):
                uom_id=uom_obj.search([('name','=',r['unit_of_measure'])],limit=1)
                if uom_id:
                   val.update({'uom_id': uom_id.id, 'uom_po_id':uom_id.id})
-
+            if r['product_id'] == 3959:
+                print("VVVVVVVVVVV::::::::::::::",val)
             try:
                 if val:
                     product.sudo().write(val)
@@ -505,7 +509,7 @@ class bidfood_sale(models.Model):
         return True
     def bidfood_send(self, payload):
         product_big = self.env['product.big'].create({'name': 'Test'})
-        url = 'https://postest.bidfood.co.za/api/Invoice1'
+        url = 'https://postest.bidfood.co.za/api/Invoice'
         self.bidfood_token()
         headers = {'Authorization': 'Bearer %s' % self.token,'Content-Type': 'application/json'
 }
