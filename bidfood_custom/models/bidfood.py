@@ -72,7 +72,7 @@ class ProductProduct(models.Model):
     def _load_pos_data_domain(self, data):
         result = super()._load_pos_data_domain(data)
         config_id = self.env['pos.config'].browse(data['pos.config']['data'][0]['id'])
-        result.append(('branch', '=', config.branch),('siteid','=',config_id.site_id))
+        result.append(('branch', '=', config_id.branch),('siteid','=',config_id.site_id))
         return result
 
 class PosOrder(models.Model):
