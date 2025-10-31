@@ -18,20 +18,9 @@ export class BiScaleScreen extends Component {
         onWillUnmount(this.onWillUnmount);
     }
     onMounted() {
-        this.iot_box = this.hardwareProxy.iotBoxes.find((box) => box.ip === this.scale.iotIp);
-        this._error = false;
-        if (!this.isManualMeasurement) {
-            this.scale.action({ action: "start_reading" });
-        }
-        super.onMounted(...arguments);
         this._readScale();
     }
     onWillUnmount() {
-        super.onWillUnmount(...arguments);
-        // FIXME action return a promise, but we don't wait for it
-        // its possible that the promise wasn't resolved when we remove the listener
-        this.scale.action({ action: "stop_reading" });
-        this.scale.removeListener();
         this.shouldRead = false;
     }
     confirm() {
@@ -51,39 +40,14 @@ export class BiScaleScreen extends Component {
     back(){
         this.pos.showScreen('ProductScreen')
     }
-    measureWeight() {
-        this.scale.action({ action: "read_once" });
-    }
-    async _readScale() {
+    _readScale() {
         this.shouldRead = true;
-        await this.scale.addListener(this._onValueChange.bind(this));
-        await this.scale.action({ action: "read_once" });
-    }
-    _onValueChange(data) {
-        if (data.status.status === "error") {
-            this.dialog.add(AlertDialog, {
-                body: data.status.message_body,
-            });
-        } else {
-            if (this.state.tareLoading) {
-                this.state.tare = data.value;
-                this.pos.setScaleTare(data.value);
-                setTimeout(() => {
-                    this.state.tareLoading = false;
-                }, 3000);
-            } else {
-                this.state.weight = data.value;
-                this.pos.setScaleWeight(data.value);
-            }
-        }
-    }
-    get scale() {
-        return this.hardwareProxy.deviceControllers.scale;
-    }
-    get isManualMeasurement() {
-        return this.scale?.manual_measurement;
+        this._setWeight();
     }
     async _setWeight() {
+        if (!this.shouldRead) {
+            return;
+        }
         this.state.weight = await this.hardwareProxy.readScale();
         setTimeout(() => this._setWeight(), 500);
     }
