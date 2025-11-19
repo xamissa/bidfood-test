@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="bi_pos_weight_barcode_template" inherit_id="point_of_sale.template" xml:space="preserve">
 
+	<t t-name="bi_pos_weight_barcode.debug_widget_inherit_electronic_scale" t-inherit="point_of_sale.DebugWidget" t-inherit-mode="extension" owl="1">
+		<xpath expr="//div[hasclass('debug-barcode-scanner')]" position="before">
+			<div class="debug-electronic-scale">
+				<h5 class="category">Electronic Scale</h5>
+				<input t-model="state.weightInput" type="text" class="weight form-control"/>
+				<ul class="d-flex flex-column align-items-start mb-3">
+					<li class="set_weight btn btn-link" t-on-click="setWeight">Set Weight</li>
+					<li class="reset_weight btn btn-link" t-on-click="resetWeight">Reset</li>
+				</ul>
+			</div>
+		</xpath>
+	</t>
+
+
 	<t t-name="bi_pos_weight_barcode.BiScaleScreen" owl="1">
 		<div class="scale-screen screen">
 			<div class="screen-content">
@@ -31,7 +45,7 @@
 			</div>
 		</div>
 	</t>
-	
+
 
 	<t t-name="bi_pos_weight_barcode.WBReceiptScreen" owl="1">
 		<t t-if="pos.config.is_weight_scale_screen">
@@ -53,10 +67,10 @@
 						<div class="pos-receipt-container text-center">
 							<div class="d-inline-block m-3 p-3 border rounded bg-view text-start overflow-hidden">
 								<WBReceipt
-									barcode = "props.barcode"
-									product = "props.product"
-									weight = "props.weight"
-									price = "props.price" />
+									barcode="props.barcode"
+									productName="props.productName"
+									weight="props.weight"
+									price="props.price" />
 							</div>
 						</div>
 					</div>
@@ -64,8 +78,6 @@
 			</div>
 		</t>
 		<t t-else="">
-
-
 		</t>
 	</t>
 

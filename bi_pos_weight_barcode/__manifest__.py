@@ -3,7 +3,7 @@
 
 {
 	'name': 'POS Weight Barcode on Screen',
-	'version': '18.0.0.0',
+	'version': '18.0.0.1',
 	'category': 'Point of Sale',
 	'summary': 'POS generate weight barcode on point of sale screen pos weight barcode pos screen weight barcode point of sale weight barcode point of sale screen weight barcode POS Weight Screen with Barcode point of sale Weight Screen Barcode generate pos weight barcode',
 	'description' :"""
