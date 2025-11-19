@@ -5,6 +5,9 @@ import { registry } from "@web/core/registry";
 import { usePos } from "@point_of_sale/app/store/pos_hook";
 import { Component, onMounted, onWillUnmount, useExternalListener, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { HardwareProxy } from "@point_of_sale/app/hardware_proxy/hardware_proxy_service";
+import { patch } from "@web/core/utils/patch";
+import { DebugWidget } from "@point_of_sale/app/debug/debug_widget";
 
 export class BiScaleScreen extends Component {
     static template = "bi_pos_weight_barcode.BiScaleScreen";
@@ -17,6 +20,14 @@ export class BiScaleScreen extends Component {
         onMounted(this.onMounted);
         onWillUnmount(this.onWillUnmount);
     }
+    
+    get product() {
+        if (this.props.productId) {
+            return this.pos.models['product.product'].get(this.props.productId);
+        }
+        return this.props.product;
+    }
+    
     onMounted() {
         this._readScale();
     }
@@ -25,7 +36,7 @@ export class BiScaleScreen extends Component {
     }
     confirm() {
         this.props.getPayload({
-            payload: { weight: this.state.weight },
+            weight: this.state.weight
         });
         this.props.close();
     }
@@ -61,10 +72,10 @@ export class BiScaleScreen extends Component {
     }
     get productWeightString() {
         const defaultstr = (this.state.weight || 0).toFixed(3) + " Kg";
-        if (!this.props.product) {
+        if (!this.product) {
             return defaultstr;
         }
-        const uom = this.props.product.uom_id;
+        const uom = this.product.uom_id;
         if (!uom) {
             return defaultstr;
         }
@@ -75,19 +86,19 @@ export class BiScaleScreen extends Component {
     }
 
     get computedPriceString() {
-        return this.env.utils.formatCurrency(this.state.weight * this.props.product.lst_price);
+        return this.env.utils.formatCurrency(this.state.weight * this.product.lst_price);
     }
 
     get productPrice() {
-        const product = this.props.product;
+        const product = this.product;
         return (product ? product.get_price(this._activePricelist, this.state.weight) : 0) || 0;
     }
     get productName() {
-        return this.props.product?.display_name || "Unnamed Product";
+        return this.product?.display_name || "Unnamed Product";
     }
 
     get productUom(){
-        let uom = this.props.product?.uom_id;
+        let uom = this.product?.uom_id;
         if(uom){
             return uom.name;
         }
@@ -120,15 +131,68 @@ export class BiScaleScreen extends Component {
             barcode = prefix.toString() + temp.toString();
             order.set_wb_barcode(barcode)
         }
+        
         self.pos.showScreen('WBReceiptScreen',{
             barcode : barcode,
-            product : self.props.product,
+            productId : self.props.productId,      
+            productName : self.productName,
             weight : self.productWeightString,
             price : self.computedPriceString,
             wt : self.state.weight,
         });
-
     }
+
 }
 
 registry.category("pos_screens").add("BiScaleScreen", BiScaleScreen);
+
+
+
+patch(HardwareProxy.prototype, {
+    /**
+     * Returns the weight on the scale.
+     *
+     * @returns {Promise<number>}
+     */
+    async readScale() {
+        if (this.useDebugWeight) {
+            return this.debugWeight;
+        }
+        try {
+            const { weight } = await this.message("scale_read");
+            return weight;
+        } catch {
+            return 0;
+        }
+    },
+
+    /**
+     * Sets a custom debug weight, ignoring actual scale values.
+     * @param {number} weight
+     */
+    setDebugWeight(weight) {
+        this.useDebugWeight = true;
+        this.debugWeight = weight;
+    },
+
+    /**
+     * Resets debug weight mode and returns to real scale readings.
+     */
+    resetDebugWeight() {
+        this.useDebugWeight = false;
+        this.debugWeight = 0;
+    },
+});
+
+patch(DebugWidget.prototype, {
+    setWeight() {
+        var weightInKg = parseFloat(this.state.weightInput);
+        if (!isNaN(weightInKg)) {
+            this.hardwareProxy.setDebugWeight(weightInKg);
+        }
+    },
+    resetWeight() {
+        this.state.weightInput = "";
+        this.hardwareProxy.resetDebugWeight();
+    },
+});

@@ -28,7 +28,7 @@ patch(ProductScreen.prototype,{
                 barcode = barcode[0];
                 let product = self.pos.models['product.product'].getBy('id',barcode.product_id[0]);
                 if(product){
-                    self.pos.addLineToCurrentOrder({product_id: product,qty: barcode.weight})
+                    self.pos.addLineToCurrentOrder({product_id: product,qty: barcode.weight},{},false);
                     prod_added =  true;
                 }
             }
