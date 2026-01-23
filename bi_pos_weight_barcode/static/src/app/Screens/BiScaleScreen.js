@@ -164,7 +164,14 @@ export class BiScaleScreen extends Component {
 
     get productPrice() {
         const product = this.product;
-        return (product ? product.get_price(this._activePricelist, this.state.weight) : 0) || 0;
+        if (!product) return 0;
+    
+        const basePrice = product.lst_price || 0;
+    
+        const tax = product.taxes_id?.[0];
+        const taxRate = tax?.amount || 0;
+    
+        return basePrice * (1 + taxRate / 100);
     }
 
     get productName() {
