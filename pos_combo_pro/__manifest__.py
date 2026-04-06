@@ -5,7 +5,10 @@
     'assets': {
         'point_of_sale.assets': [
             'pos_combo_pro/static/src/js/combo.js',
-            'pos_combo_pro/static/src/xml/combo_button.xml',
+            #'pos_combo_pro/static/src/xml/combo_button.xml',
+        ],
+        'web.assets_qweb': [
+            'pos_combo_pro/static/src/xml/**/*',
         ],
     },
     'data': [
