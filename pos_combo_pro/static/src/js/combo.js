@@ -81,7 +81,7 @@ odoo.define('pos_combo_pro.ComboButton', function (require) {
             const lines = order.get_orderlines();
         
             // Get all products from POS
-            const products = this.env.pos.db.get_product_by_category(0);
+            const products = Object.values(this.env.pos.db.product_by_id);
             console.log("ssssssssssssssssssssssssss",products)
             // ✅ Get ONLY combo products (from template)
             const combo_products = products.filter(p =>
