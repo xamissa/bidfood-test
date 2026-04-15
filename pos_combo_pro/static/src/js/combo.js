@@ -18,34 +18,55 @@ odoo.define('pos_combo_pro.ComboButton', function (require) {
     // Extend Order (your logic kept)
     const ComboOrder = (Order) => class ComboOrder extends Order {
         apply_combo(combo_product) {
-            
             const lines = this.get_orderlines();
-
-            const combo_items = combo_product.combo_item_ids;
-
+        
+            const combo_items = combo_product.combo_item_ids || [];
+            const combo_price = combo_product.combo_price;
+        
             const matched_lines = lines.filter(line =>
                 combo_items.includes(line.product.id)
             );
-
+        
             if (matched_lines.length !== combo_items.length) return;
-
-            let total = 0;
+        
+            // ✅ Step 1: total WITH tax
+            let total_with_tax = 0;
             matched_lines.forEach(line => {
-                total += line.get_unit_price() * line.get_quantity();
+                total_with_tax += line.get_all_prices().priceWithTax;
             });
-
-            const discount_total = total - combo_product.combo_price;
-
-            if (discount_total <= 0) return;
-
+        
+            // ✅ Step 2: total WITHOUT tax
+            let total_without_tax = 0;
             matched_lines.forEach(line => {
-                const line_price = line.get_unit_price() * line.get_quantity();
-                const ratio = line_price / total;
+                total_without_tax += line.get_all_prices().priceWithoutTax;
+            });
+        
+            // ✅ Step 3: derive effective tax ratio
+            const tax_ratio = total_with_tax / total_without_tax;
+        
+            // ✅ Step 4: convert combo price → EXCLUDED
+            const combo_price_excl = combo_price / tax_ratio;
+        
+            // ✅ Step 5: discount on EXCLUDED
+            const discount_total = total_without_tax - combo_price_excl;
+        
+            if (discount_total <= 0) return;
+        
+            matched_lines.forEach(line => {
+                const prices = line.get_all_prices();
+        
+                const line_base = prices.priceWithoutTax;
+        
+                const ratio = line_base / total_without_tax;
+        
                 const line_discount = discount_total * ratio;
-                const discount_percent = (line_discount / line_price) * 100;
-
+        
+                const discount_percent = (line_discount / line_base) * 100;
+        
                 line.set_discount(discount_percent);
             });
+        
+            console.log("✅ FINAL TOTAL SHOULD MATCH COMBO PRICE");
         }
     };
 
@@ -55,18 +76,55 @@ odoo.define('pos_combo_pro.ComboButton', function (require) {
     class ComboButton extends PosComponent {
         async onClick() {
             console.log("✅ Button Clicked");
-
+        
             const order = this.env.pos.get_order();
+            const lines = order.get_orderlines();
+        
+            // Get all products from POS
             const products = this.env.pos.db.get_product_by_category(0);
-
-            const combo_products = products.filter(p => p.is_combo);
-            console.log("22222222222222222222222222",combo_products)
+            console.log("ssssssssssssssssssssssssss",products)
+            // ✅ Get ONLY combo products (from template)
+            const combo_products = products.filter(p =>
+                p.is_combo
+            );
+        
+            console.log("Combo Products:", combo_products);
+        
             if (!combo_products.length) {
-                alert("No combo found");
+                alert("No combo configured");
                 return;
             }
-
-            order.apply_combo(combo_products[0]);
+        
+            // ✅ Get current order product IDs
+            const order_product_ids = lines.map(line => line.product.id);
+        
+            console.log("Order Products:", order_product_ids);
+        
+            // ✅ Find matching combo
+            let matched_combo = null;
+        
+            for (let combo of combo_products) {
+                const combo_items = combo.combo_item_ids || [];
+        
+                const is_match = combo_items.every(id =>
+                    order_product_ids.includes(id)
+                );
+        
+                if (is_match) {
+                    matched_combo = combo;
+                    break;
+                }
+            }
+        
+            if (!matched_combo) {
+                alert("No matching combo found");
+                return;
+            }
+        
+            console.log("✅ Matched Combo:", matched_combo);
+        
+            // Apply combo
+            order.apply_combo(matched_combo);
         }
     }
 
