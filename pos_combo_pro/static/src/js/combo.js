@@ -104,7 +104,7 @@ odoo.define('pos_combo_pro.ComboButton', function (require) {
             let matched_combo = null;
         
             for (let combo of combo_products) {
-                const combo_items = combo.product_tmpl_id.combo_item_ids || [];
+                const combo_items = combo.combo_item_ids || [];
         
                 const is_match = combo_items.every(id =>
                     order_product_ids.includes(id)
