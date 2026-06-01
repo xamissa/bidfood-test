@@ -1,7 +1,7 @@
 {
     "name": "PoS Product Display Internal Reference",
     "summary": "Display Internal Reference with product name",
-    "version": "19.0",
+    "version": "18.0",
     "category": "Point of Sale",
     "website": "",
     "author": "",
