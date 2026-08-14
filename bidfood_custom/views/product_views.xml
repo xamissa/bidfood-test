@@ -50,32 +50,28 @@
 
     <record model="ir.ui.view" id="pos_config_branch_view">
         <field name="name">pos.config.branch.view</field>
-        <field name="model">pos.config</field>
-        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='title']" position="after">
-                <div class="oe_title" id="branch">
-                    <label for="branch"/>
-                    <field name='branch'/>
-                </div>
-                <div class="oe_title" id="site_id">
-                    <label for="site_id"/>
-                    <field name='site_id'/>
-                </div>
+            <xpath expr="//block[@id='restaurant_section']" position='before'>
+                <block title="Branch Configuration" id="branch_config">
+                    <setting>
+                        <div>
+                            <label for="pos_branch"/>
+                        </div>
+                        
+                            <field name="pos_branch"/>
+                                                
+                    </setting>
+                    <setting>
+                        <div>
+                            <label for="pos_site_id"/>
+                        </div>                        
+                        <field name="pos_site_id"/>                       
+                    </setting>
+                </block>
             </xpath>
 
         </field>
     </record>
-
-    <!-- <record model="ir.ui.view" id="pos_session_branch_view">
-        <field name="name">pos.session.branch.view</field>
-        <field name="model">pos.session</field>
-        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//h2[@name='order']" position="after">
-                <field name='branch'/>
-            </xpath>
-
-        </field>
-    </record> -->
 </odoo>

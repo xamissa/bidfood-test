@@ -20,6 +20,19 @@ class pos_config(models.Model):
     branch=fields.Char(string="Branch",related='company_id.branch')
     site_id=fields.Char(string="Site Id")
 
+    @api.constrains('payment_method_ids')
+    def _check_payment_method_ids_journal(self):
+        for config in self:
+            for cash_method in config.payment_method_ids.filtered(lambda m: m.journal_id.type == 'cash'):
+                if len(cash_method.journal_id.pos_payment_method_ids) > 1:
+                    raise ValidationError(_("You cannot use the same journal on multiples cash payment methods."))
+
+class ResConfigSetting(models.TransientModel):
+    _inherit = "res.config.settings"
+
+    pos_branch=fields.Char(string="Branch",related='pos_config_id.branch',readonly=True)
+    pos_site_id=fields.Char(string="Site Id",related='pos_config_id.site_id',readonly=False)
+
 class pos_session(models.Model):
     _inherit = "pos.session"
 

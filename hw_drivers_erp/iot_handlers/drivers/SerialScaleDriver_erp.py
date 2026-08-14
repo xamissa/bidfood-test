@@ -8,10 +8,10 @@ import serial
 import threading
 import time
 from odoo import http
-from odoo.addons.hw_drivers.controllers.proxy import proxy_drivers
-from odoo.addons.hw_drivers.event_manager import event_manager
-from odoo.addons.hw_drivers.iot_handlers.drivers.SerialBaseDriver import SerialDriver, SerialProtocol, serial_connection
-from odoo.addons.hw_drivers.iot_handlers.drivers.SerialScaleDriver import ScaleDriver
+from odoo.addons.iot_drivers.controllers.proxy import proxy_drivers
+from odoo.addons.iot_drivers.event_manager import event_manager
+from odoo.addons.iot_drivers.iot_handlers.drivers.serial_base_driver import SerialDriver, SerialProtocol, serial_connection
+from odoo.addons.iot_drivers.iot_handlers.drivers.serial_scale_driver import ScaleDriver
 
 _logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ ADAMEquipmentProtocolErpWeb = ScaleProtocol(
     parity=serial.PARITY_NONE,
     timeout=0.2,
     writeTimeout=0.2,
-    measureRegexp=b"\s*([0-9.]+)kg",  # LABEL format 3 + KG in the scale settings, but Label 1/2 should work
+    measureRegexp=rb"\s*([0-9.]+)kg",  # LABEL format 3 + KG in the scale settings, but Label 1/2 should work
     statusRegexp=None,
     commandTerminator=b"\r\n",
     commandDelay=0.2,
@@ -123,3 +123,6 @@ class AdamEquipmentDriverErpWeb(ScaleDriver):
         except Exception:
             _logger.exception('Error while probing %s with protocol %s' % (device, protocol.name))
         return False
+
+    def _read_status(self, answer):
+        pass
