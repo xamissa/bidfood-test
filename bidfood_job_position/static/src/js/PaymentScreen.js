@@ -1,30 +1,22 @@
-odoo.define('bidfood_job_position.PaymentScreen', function (require) {
-    'use strict';
+/** @odoo-module */
 
-    const PaymentScreen = require('point_of_sale.PaymentScreen');
-    const Registries = require('point_of_sale.Registries');
+import { PaymentScreen } from "@point_of_sale/app/screens/payment_screen/payment_screen";
+import { patch } from "@web/core/utils/patch";
+import { _t } from "@web/core/l10n/translation";
+import { ask } from "@point_of_sale/app/utils/make_awaitable_dialog";
 
-    const PosCustomerCheckPaymentScreen = (PaymentScreen) =>
-          class extends PaymentScreen {
-              async validateOrder(isForceValidate) {
-               if(!this.currentOrder.get_client())
-               {
-                  const { confirmed } = await this.showPopup('ConfirmPopup', {
-                       title: this.env._t('Please select the Customer'),
-                       body: this.env._t(
-                           'You need to select the customer before you can invoice or ship an order.'
-                       ),
-                   });
-                   if (confirmed) {
-                       this.selectClient();
-                   }
-                   return false;
-               }
-               await super.validateOrder(...arguments);
-              }
-          };
-
-    Registries.Component.extend(PaymentScreen, PosCustomerCheckPaymentScreen);
-
-    return PaymentScreen;
+patch(PaymentScreen.prototype, {
+    async validateOrder(isForceValidate = false) {
+        if (!this.currentOrder.getPartner()) {
+            const confirmed = await ask(this.dialog, {
+                title: _t("Customer Required"),
+                body: _t("You need to select the customer before you can invoice or ship an order."),
+            });
+            if (confirmed) {
+                await this.pos.selectPartner();
+            }
+            return;
+        }
+        return await super.validateOrder(isForceValidate);
+    },
 });
