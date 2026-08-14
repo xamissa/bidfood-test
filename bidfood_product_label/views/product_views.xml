@@ -35,7 +35,21 @@
         </xpath>
     </template>
 
-    <template id="label_product_product_view" inherit_id="stock.label_product_product_view">
+    <template id="label_product_product_view_normal_zpl_label" inherit_id="stock.normal_zpl_label">
+        <xpath expr="//t[@t-if='price_included']" position="replace">
+            <t t-if="price_included">
+                ^FO600,100,1
+                ^CI28
+                <t t-if="product.currency_id.position == 'after'">
+                ^A0N,66,48^FH^FD<t t-esc="product.get_tax_price_zpl()" t-options='{"widget": "float", "precision": 2}'/><t t-esc="product.currency_id.symbol"/>^FS
+                </t>
+                <t t-if="product.currency_id.position == 'before'">
+                ^A0N,66,48^FH^FD<t t-esc="product.currency_id.symbol"/><t t-esc="product.get_tax_price_zpl()" t-options='{"widget": "float", "precision": 2}'/>^FS
+                </t>
+            </t>
+        </xpath>
+    </template>
+    <template id="label_product_product_view_small_zpl_label" inherit_id="stock.small_zpl_label">
         <xpath expr="//t[@t-if='price_included']" position="replace">
             <t t-if="price_included">
                 ^FO600,100,1
