@@ -2,58 +2,35 @@
 <odoo>
     <template id="report_simple_label_dymo" inherit_id="product.report_simple_label_dymo">
         <xpath expr="//div[hasclass('o_label_full')]//div[4]" position="replace">
-            <div class="text-right" style="padding: 0 4px;">
-                <t t-if="product.is_product_variant">
+            <div class="text-end" style="padding: 0 4px;">
                     <strong class="o_label_price_small" t-esc="product.get_tax_price()"/>
-                </t>
-                <t t-else="">
-                    <strong class="o_label_price_small" t-esc="product.get_tax_price()"/>
-                </t>
-                <div class="o_label_extra_data">
-                    <t t-out="extra_html"/>
-                </div>
             </div>
         </xpath>
     </template>
 
     <template id="report_simple_label4x12" inherit_id="product.report_simple_label4x12">
-        <xpath expr="//t[@t-if='price_included']//div[hasclass('o_label_price_medium')]" position="replace">
-            <div class="o_label_price_medium text-right">
-                <t t-if="product.is_product_variant">
-                    <strong t-esc="product.get_tax_price()"/>
-                </t>
-                <t t-else="">
-                    <strong t-esc="product.get_tax_price()"/>
-                </t>
+        <xpath expr="//div[hasclass('o_label_price_medium')]" position="replace">
+            <div class="o_label_price_medium text-end">                
+                <strong t-esc="product.get_tax_price()"/>
             </div>
         </xpath>
     </template>
 
     <template id="report_simple_label4x7" inherit_id="product.report_simple_label4x7">
         <xpath expr="//div[hasclass('o_label_full')]//div[2]" position="replace">
-            <div class="text-right" style="padding-top:0;padding-bottom:0">
-                <t t-if="product.is_product_variant">
-                    <strong class="o_label_price_medium" t-esc="product.get_tax_price()"/>
-                </t>
-                <t t-else="">
-                    <strong class="o_label_price_medium" t-esc="product.get_tax_price()"/>
-                </t>
+            <div class="text-end" style="padding-top:0;padding-bottom:0">                
+                <strong class="o_label_price_medium" t-esc="product.get_tax_price()"/>
             </div>
         </xpath>
     </template>
 
     <template id="report_simple_label2x7" inherit_id="product.report_simple_label2x7">
         <xpath expr="//div[hasclass('o_label_data')]//div[2]" position="replace">
-            <div class="text-right" style="line-height:normal">
+            <div class="text-end" style="line-height:normal">
                 <div class="o_label_extra_data">
                     <t t-out="extra_html"/>
                 </div>
-                <t t-if="product.is_product_variant">
-                    <strong class="o_label_price" t-esc="product.get_tax_price()"/>
-                </t>
-                <t t-else="">
-                    <strong class="o_label_price" t-esc="product.get_tax_price()"/>
-                </t>
+                <strong class="o_label_price" t-esc="product.get_tax_price()"/>
             </div>
         </xpath>
     </template>
