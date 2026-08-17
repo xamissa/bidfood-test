@@ -1,54 +1,100 @@
 /** @odoo-module */
-
 import { OrderReceipt } from "@point_of_sale/app/screens/receipt_screen/receipt/order_receipt";
-import { PosOrderline } from "@point_of_sale/app/models/pos_order_line";
 import { patch } from "@web/core/utils/patch";
 import { Component, xml } from "@odoo/owl";
-
-patch(PosOrderline.prototype, {
-    get_product() { return this.getProduct(); },
-    get_discount() { return this.getDiscount(); },
-    get_quantity_str_with_unit() {
-        const qty = this.getQuantityStr().qtyStr;
-        const unit = this.getUnit()?.name || "";
-        return unit ? `${qty} ${unit}` : qty;
-    },
-    get_display_price() { return this.price_unit * this.qty * (1 - this.getDiscount() / 100); },
-});
+import { usePos } from "@point_of_sale/app/hooks/pos_hook";
 
 patch(OrderReceipt.prototype, {
-    get isStandardReceipt() {
-        return !this.order.config.is_custom_receipt || !this.order.config.design_receipt;
+    setup() {
+        super.setup();
+        this.pos = usePos();
     },
     get templateProps() {
-        const cashier = this.env.services.pos.getCashier()?.name || "";
-        this.order.cashier = cashier;
-        const date = this.order.date_order?.toFormat
-            ? this.order.date_order.toFormat("yyyy-MM-dd HH:mm:ss")
-            : (this.order.date_order || "");
-        const taxAmount = (this.order.priceIncl || 0) - (this.order.priceExcl || 0);
+        const order = this.props.order;
+        let receiptData = {
+            headerData: this.props.receipt?.headerData || {},
+        };
+        try {
+            Object.assign(receiptData, {
+                name: order?.name || '',
+                date: (() => {
+                    let rawDate = order?.date_order || order?.validation_date || this.props.receipt?.date || '';
+                    if (rawDate && typeof rawDate === 'object' && typeof rawDate.toFormat === 'function') {
+                        return rawDate.toFormat('dd/MM/yyyy HH:mm:ss');
+                    }
+                    const sDate = String(rawDate || '').replace('T', ' ').split('.')[0];
+                    if (sDate.includes('-')) {
+                        const parts = sDate.split(' ');
+                        const dParts = parts[0].split('-');
+                        if (dParts.length === 3) {
+                            return `${dParts[2]}/${dParts[1]}/${dParts[0]}${parts[1] ? ' ' + parts[1] : ''}`;
+                        }
+                    }
+                    return sDate;
+                })(),
+                headerData: receiptData.headerData || this.header || {},
+                change: order?.change || 0,
+                amount_total: order?.priceIncl || 0,
+                total_with_tax: order?.priceIncl || 0,
+                total_without_tax: order?.priceExcl || 0,
+                total_tax: order?.amountTaxes || 0,
+                total_discount: order?.getTotalDiscount?.() || 0,
+                tax_details: order?.prices?.taxDetails?.subtotals?.[0]?.tax_groups || [],
+                footer: order?.config?.receipt_footer || '',
+                footer_html: order?.config?.receipt_footer || '',
+            });
+        } catch (e) {
+            console.warn('Custom receipt: error building receipt data', e);
+        }
+        // Pre-process orderlines into plain objects so they work
+        // reliably inside dynamically compiled OWL xml templates
+        const formatCurrency = this.env?.utils?.formatCurrency || ((v) => String(v));
+        const orderlines = [];
+        try {
+            for (const line of (order?.lines || [])) {
+                orderlines.push({
+                    productName: line.getFullProductName?.() || line.full_product_name || line.product_id?.display_name || '',
+                    qty: line.qty || 0,
+                    discount: line.discount || 0,
+                    customerNote: line.getCustomerNote?.() || line.customer_note || '',
+                    priceIncl: line.priceIncl || 0,
+                    formattedPriceIncl: formatCurrency(line.priceIncl || 0),
+                });
+            }
+        } catch (e) {
+            console.warn('Custom receipt: error building orderlines', e);
+        }
+        // Pre-process payment lines into plain objects
+        const paymentlines = [];
+        try {
+            for (const line of (order?.payment_ids || [])) {
+                paymentlines.push({
+                    name: line.payment_method_id?.name || '',
+                    amount: line.amount || 0,
+                    formattedAmount: formatCurrency(line.amount || 0),
+                    ticket: line.ticket || '',
+                });
+            }
+        } catch (e) {
+            console.warn('Custom receipt: error building paymentlines', e);
+        }
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",orderlines)
         return {
-            order: this.order,
-            receipt: {
-                name: this.order.pos_reference || this.order.name || "",
-                date,
-                headerData: { header: this.order.config.receipt_header || "" },
-                amount_total: this.order.priceExcl,
-                total_with_tax: this.order.priceIncl,
-            },
-            orderlines: this.order.lines,
-            paymentlines: this.order.payment_ids,
-            data: {
-                amount_total: this.order.priceIncl,
-                total_without_tax: this.order.priceExcl,
-                tax_details: taxAmount ? [{ amount: taxAmount }] : [],
-            },
+            order: order,
+            orderlines: orderlines,
+            paymentlines: paymentlines,
+            receipt: receiptData,
+            data: receiptData,
         };
     },
     get templateComponent() {
-        const template = this.order.config.design_receipt;
-        return class CustomReceipt extends Component {
-            static template = xml`${template}`;
+        var mainRef = this;
+        return class extends Component {
+            setup() { }
+            static template = xml`${mainRef.pos.config.design_receipt}`
         };
     },
+    get isTrue() {
+        return !!this.pos.config.is_custom_receipt;
+    }
 });

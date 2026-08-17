@@ -67,7 +67,8 @@ class POSSession(models.Model):
 
     def _load_pos_data_models(self, config):
         res = super()._load_pos_data_models(config)
-        res += ['barcode.rule']
+        if 'barcode.rule' not in res:
+            res.append('barcode.rule')
         return res
 
 
@@ -80,5 +81,14 @@ class BarcodeRule(models.Model):
 
     @api.model
     def _load_pos_data_domain(self, data, config):
-        nomenclature = config.barcode_nomenclature_id
-        return [('barcode_nomenclature_id', '=', nomenclature.id)] if nomenclature else []
+        return []
+
+    @api.model
+    def _load_pos_data_search_read(self, data, config):
+        domain = self._load_pos_data_domain(data, config)
+        fields = self._load_pos_data_fields(config)
+
+        return self.search_read(
+            domain,
+            fields
+        )

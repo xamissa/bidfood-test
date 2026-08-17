@@ -39,11 +39,3 @@ class PosConfig(models.Model):
     is_custom_receipt = fields.Boolean(string='Is Custom Receipt',
                                        help='Indicates the receipt  design is '
                                             'custom or not')
-
-
-    def _load_pos_data_fields(self, config):
-        fields_list = super()._load_pos_data_fields(config)
-        for field_name in ('receipt_design_id', 'design_receipt', 'logo', 'is_custom_receipt'):
-            if field_name not in fields_list:
-                fields_list.append(field_name)
-        return fields_list

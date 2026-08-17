@@ -35,3 +35,18 @@ class PosReceipt(models.Model):
     name = fields.Char(string='Name', help='Name of the pos receipt')
     design_receipt = fields.Text(string='Receipt XML',
                                  help='Add your customised receipts for pos')
+
+    def _load_pos_data_fields(self, config):
+        """Return the fields loaded into the POS."""
+        return [
+            'id',
+            'name',
+            'design_receipt',
+        ]
+
+    def _load_pos_data_search_read(self,data,config):
+        """Load POS receipt records into the POS."""
+        return self.search_read(
+            [],
+            self._load_pos_data_fields(config),
+        )
