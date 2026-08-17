@@ -6,7 +6,7 @@
         </xpath>
         <xpath expr="//div[hasclass('product-content')]" position="before">
             <div class="px-2 py-1 rounded-top-3" style="background-color:#714B67;color:#fff;">
-                <t t-esc="env.utils.formatCurrency(props.product?.lst_price || 0)"/>
+                <t t-esc="env.utils.formatCurrency(props.product?.list_price || 0)"/>
             </div>
         </xpath>
     </t>
